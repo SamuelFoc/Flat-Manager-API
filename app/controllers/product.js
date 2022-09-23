@@ -60,8 +60,6 @@ exports.createOne = (req, res) => {
     urgent: input.priority ? input.priority : "LOW",
   };
 
-  console.log(PRODUCT_MODEL);
-
   sequelize
     .sync()
     .then(() => {

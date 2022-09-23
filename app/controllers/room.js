@@ -13,10 +13,9 @@ exports.getOne = (req, res) => {
 };
 
 exports.createOne = (req, res) => {
-  const input = req.body;
+  const { name } = req.body;
   const roomModel = {
-    name: input.name ? input.name : new Error("Name is required!"),
-    number_of_livings: input.number_of_livings ? input.number_of_livings : 1,
+    name: name ? name : new Error("Name is required!"),
   };
   portal.createOne(req, res, roomModel);
 };

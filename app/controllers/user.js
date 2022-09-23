@@ -1,5 +1,8 @@
 const User = require("../models/user");
 const sequelize = require("../util/database");
+const Role = require("../models/role");
+const Room = require("../models/room");
+const bcrypt = require("bcrypt");
 
 exports.getAll = (req, res) => {
   let count;
@@ -50,32 +53,52 @@ exports.getOne = async (req, res) => {
 };
 
 exports.createOne = async (req, res) => {
-  const input = req.body;
+  const { user, pwd, email, contact, age, work, isAdmin, room } = req.body;
   let count;
+
+  // * Check for required parameters
+  if (!user || !pwd || !email)
+    return res
+      .status(400)
+      .json({ message: "Username, email and passsword required!" });
+
+  // * Check if user already exists
+  const userExists = await User.findOne({
+    where: { username: user },
+  });
+  if (userExists)
+    return res.status(409).send("User with that name already exists!");
+
+  // * Hash the password
+  const hashedPwd = await bcrypt.hash(pwd, 10);
+
+  // * Create user model
   const USER_MODEL = {
-    username: input.username ? input.username : null,
-    email: input.email ? input.email : null,
-    password: input.password ? input.password : null,
-    contact: input.contact ? input.contact : "Unknown",
-    age: input.age ? input.age : null,
-    work: input.work ? input.work : "Student",
-    isAdmin: input.isAdmin ? input.isAdmin : false,
+    username: user,
+    email: email,
+    password: hashedPwd,
+    contact: contact ? contact : "Unknown",
+    age: age ? age : null,
+    work: work ? work : "Student",
+    isAdmin: isAdmin ? isAdmin : false,
   };
-  sequelize
-    .sync()
-    .then(async () => {
-      count = await User.count();
-      return User.create(USER_MODEL);
+
+  // * Create user
+  User.create(USER_MODEL)
+    .then(async (user) => {
+      if (room !== undefined) {
+        const foundRoom = await Room.findOne({ where: { name: room } });
+        await foundRoom.addUser(user);
+      }
+      console.log("Room created");
+      const role = await user.createRole({ roleName: "User" });
+      return user.addRole(role);
     })
-    .then((user) => {
-      return res.status(200).json({
-        count: count,
-        message: "User created successfully.",
-        data: user,
-      });
+    .then(() => {
+      res.status(200).send("User created successfully!");
     })
     .catch((err) => {
-      return res.status(500).json({ ERROR: err.message });
+      res.status(400).send(err);
     });
 };
 
