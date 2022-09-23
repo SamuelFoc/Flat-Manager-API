@@ -1,20 +1,20 @@
+// * EXPRESS SERVER
 const express = require("express");
-const bodyParser = require("body-parser");
-require("dotenv").config();
 const app = express();
+// * PARSERS
+const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
+// * CORS POLICY
+const cors = require("cors");
+const corsOptions = require("./config/corsOptions");
+// * ENVIRONMENT
+require("dotenv").config();
 
 // MIDLEWARE
+app.use(cors(corsOptions));
 app.use(bodyParser.urlencoded({ extended: false }));
-
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "*");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
-  );
-  next();
-});
+app.use(express.json());
+app.use(cookieParser());
 
 // ROUTES
 app.use("/users", require("./routes/user"));
@@ -25,11 +25,14 @@ app.use("/energies", require("./routes/energy"));
 app.use("/services", require("./routes/service"));
 app.use("/rooms", require("./routes/room"));
 
+// ERROR
+app.use("*", (req, res) => res.status(403).json("Page not found!"));
+
 // SERVER
-app.listen(process.env.EXTERNAL_PORT || 4001, () => {
+app.listen(process.env?.EXTERNAL_PORT || 4001, () => {
   console.log(
     `Server listening on port ${
-      process.env.EXTERNAL_PORT ? process.env.EXTERNAL_PORT : 4001
+      process.env?.EXTERNAL_PORT ? process.env?.EXTERNAL_PORT : 4001
     }`
   );
 });
