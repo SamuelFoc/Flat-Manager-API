@@ -6,6 +6,16 @@ const app = express();
 // MIDLEWARE
 app.use(bodyParser.urlencoded({ extended: false }));
 
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
+
 // ROUTES
 app.use("/users", require("./routes/user"));
 app.use("/responsibilities", require("./routes/responsibility"));

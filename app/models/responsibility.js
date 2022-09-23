@@ -22,8 +22,8 @@ const Responsibility = sequelize.define(
       defaultValue: false,
     },
     urgent: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
+      type: DataTypes.STRING,
+      defaultValue: "LOW",
     },
   },
   {
@@ -33,5 +33,7 @@ const Responsibility = sequelize.define(
 
 Responsibility.belongsTo(User);
 User.hasMany(Responsibility);
+
+//Responsibility.sync({ force: true });
 
 module.exports = Responsibility;

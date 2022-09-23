@@ -63,7 +63,7 @@ exports.createOne = (req, res) => {
       ? input.deadline
       : tomorrow.setDate(tomorrow.getDate() + 1),
     done: input.done ? input.done : false,
-    urgent: input.urgent ? input.urgent : "LOW",
+    urgent: input.priority,
   };
 
   sequelize
@@ -140,7 +140,7 @@ exports.updateOne = (req, res) => {
           : responsibility.description,
         deadline: input.deadline ? input.deadline : responsibility.deadline,
         done: input.done ? input.done : responsibility.done,
-        urgent: input.urgent ? input.urgent : responsibility.urgent,
+        urgent: input.priority ? input.priority : responsibility.urgent,
       };
     })
     .then((resp_model) => {

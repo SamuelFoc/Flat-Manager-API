@@ -52,14 +52,15 @@ exports.getOne = (req, res) => {
 exports.createOne = (req, res) => {
   let count;
   const input = req.body;
-
   const PRODUCT_MODEL = {
     name: input.name ? input.name : "Product",
     type: input.type ? input.type : new Error("Type is required!"),
     price: input.price ? input.price : 0,
-    ownership: input.ownership ? input.ownership : "me",
-    urgent: input.urgent ? input.urgent : "LOW",
+    ownership: input.ownership === "true" ? req.params.email : "every",
+    urgent: input.priority ? input.priority : "LOW",
   };
+
+  console.log(PRODUCT_MODEL);
 
   sequelize
     .sync()
@@ -133,7 +134,7 @@ exports.updateOne = (req, res) => {
         type: input.type ? input.type : product.type,
         price: input.price ? input.price : product.price,
         ownership: input.ownership ? input.ownership : product.ownership,
-        urgent: input.urgent ? input.urgent : product.urgent,
+        urgent: input.priority ? input.priority : product.urgent,
       };
     })
     .then((resp_model) => {
