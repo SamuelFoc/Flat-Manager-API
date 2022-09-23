@@ -24,6 +24,9 @@ app.use("/events", require("./routes/event"));
 app.use("/energies", require("./routes/energy"));
 app.use("/services", require("./routes/service"));
 app.use("/rooms", require("./routes/room"));
+app.use("/refresh", require("./routes/refreshToken"));
+app.use("/login", require("./routes/authentication"));
+app.use("/logout", require("./routes/logout"));
 
 // ERROR
 app.use("*", (req, res) => res.status(403).json("Page not found!"));
