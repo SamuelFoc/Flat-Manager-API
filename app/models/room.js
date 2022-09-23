@@ -10,7 +10,7 @@ const Room = sequelize.define(
     },
     number_of_livings: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      defaultValue: 0,
     },
   },
   {

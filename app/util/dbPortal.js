@@ -41,11 +41,10 @@ class Portal {
   }
 
   createOne(req, res, ObjectModel) {
-    const input = req.body;
-
     this.database
       .sync()
       .then(() => {
+        console.log(ObjectModel);
         return this.ChildModel.create(ObjectModel);
       })
       .then((data) => {
