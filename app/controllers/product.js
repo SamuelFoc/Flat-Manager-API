@@ -7,6 +7,24 @@ exports.getAll = (req, res) => {
   sequelize
     .sync()
     .then(() => {
+      return Product.findAll();
+    })
+    .then((products) => {
+      return res.status(200).json({
+        count: products.length,
+        message: `All products found.`,
+        data: products,
+      });
+    })
+    .catch((err) => {
+      return res.status(500).json({ ERROR: err.message });
+    });
+};
+
+exports.getMyAll = (req, res) => {
+  sequelize
+    .sync()
+    .then(() => {
       return User.findOne({ where: { email: req.params.email } });
     })
     .then((user) => {
@@ -51,27 +69,30 @@ exports.getOne = (req, res) => {
 
 exports.createOne = (req, res) => {
   let count;
-  const input = req.body;
+  const { name, type, price, owner, priority } = req.body;
   const PRODUCT_MODEL = {
-    name: input.name ? input.name : "Product",
-    type: input.type ? input.type : new Error("Type is required!"),
-    price: input.price ? input.price : 0,
-    ownership: input.ownership === "true" ? req.params.email : "every",
-    urgent: input.priority ? input.priority : "LOW",
+    name: name ? name : "Product",
+    type: type ? type : new Error("Type is required!"),
+    price: price ? price : 0,
+    ownership: owner !== "" ? owner : "every",
+    urgent: priority ? priority : "LOW",
   };
-
+  console.log(PRODUCT_MODEL);
   sequelize
     .sync()
+    // .then(() => {
+    //   return User.findOne({
+    //     where: {
+    //       email: req.params.email,
+    //     },
+    //   });
+    // })
+    // .then(async (user) => {
+    //   count = user.getProducts().length;
+    //   return user.createProduct(PRODUCT_MODEL);
+    // })
     .then(() => {
-      return User.findOne({
-        where: {
-          email: req.params.email,
-        },
-      });
-    })
-    .then(async (user) => {
-      count = user.getProducts().length;
-      return user.createProduct(PRODUCT_MODEL);
+      return Product.create(PRODUCT_MODEL);
     })
     .then((product) => {
       return res.status(200).json({
@@ -88,19 +109,22 @@ exports.createOne = (req, res) => {
 exports.deleteOne = (req, res) => {
   sequelize
     .sync()
+    // .then(() => {
+    //   return User.findOne({ where: { email: req.params.email } });
+    // })
+    // .then(async (user) => {
+    //   const product = await Product.findOne({
+    //     where: { id: parseInt(req.params.id) },
+    //   });
+    //   await user.removeProduct(product);
+    //   return await Product.destroy({
+    //     where: {
+    //       id: parseInt(req.params.id),
+    //     },
+    //   });
+    // })
     .then(() => {
-      return User.findOne({ where: { email: req.params.email } });
-    })
-    .then(async (user) => {
-      const product = await Product.findOne({
-        where: { id: parseInt(req.params.id) },
-      });
-      await user.removeProduct(product);
-      return await Product.destroy({
-        where: {
-          id: parseInt(req.params.id),
-        },
-      });
+      return Product.destroy({ where: { id: parseInt(req.params.id) } });
     })
     .then((product) => {
       return res.status(200).json({
@@ -115,32 +139,23 @@ exports.deleteOne = (req, res) => {
 };
 
 exports.updateOne = (req, res) => {
-  const input = req.body;
-
+  const { name, type, price, owner, priority } = req.body;
   sequelize
     .sync()
     .then(() => {
       return Product.findOne({
-        where: {
-          [Op.and]: [{ userEmail: req.params.email }, { id: req.params.id }],
-        },
+        where: { id: req.params.id },
       });
     })
     .then((product) => {
-      return {
-        name: input.name ? input.name : product.name,
-        type: input.type ? input.type : product.type,
-        price: input.price ? input.price : product.price,
-        ownership: input.ownership ? input.ownership : product.ownership,
-        urgent: input.priority ? input.priority : product.urgent,
+      model = {
+        name: name ? name : product.name,
+        type: type ? type : product.type,
+        price: price ? price : product.price,
+        ownership: owner ? owner : product.ownership,
+        urgent: priority ? priority : product.urgent,
       };
-    })
-    .then((resp_model) => {
-      return Product.update(resp_model, {
-        where: {
-          [Op.and]: [{ userEmail: req.params.email }, { id: req.params.id }],
-        },
-      });
+      return product.update(model);
     })
     .then((product) => {
       return res.status(200).json({
