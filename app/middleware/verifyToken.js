@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
 const verifyJWT = (req, res, next) => {
   const authHeader = req.headers.authorization || req.headers.Authorization;
@@ -8,8 +9,9 @@ const verifyJWT = (req, res, next) => {
   const token = authHeader.split(" ")[1];
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
     if (err) return res.status(403).json("Invalid token!");
-    req.user = decoded.userInfo.username;
-    req.roles = decoded.userInfo.roles;
+    console.log(decoded);
+    req.user = decoded.UserInfo.username;
+    req.roles = decoded.UserInfo.roles;
     next();
   });
 };

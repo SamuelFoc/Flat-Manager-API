@@ -10,7 +10,7 @@ const handleRefreshToken = async (req, res) => {
 
   // * Find user with certain Refresh Token in DB
   const user = await User.findOne({
-    where: { refresh_token: refreshToken },
+    where: { refreshToken: refreshToken },
   });
   if (!user) return res.status(403).json("No user with that refresh token!");
 
@@ -19,7 +19,7 @@ const handleRefreshToken = async (req, res) => {
     refreshToken,
     process.env.REFRESH_TOKEN_SECRET,
     async (err, decoded) => {
-      console.log("LOGGING: ", decoded.username);
+      console.log("Token refreshed for user: ", decoded.username);
       if (err || user.username !== decoded.username) return res.sendStatus(403);
 
       // Get all user roles
@@ -32,7 +32,7 @@ const handleRefreshToken = async (req, res) => {
       // Get new access token
       const accessToken = jwt.sign(
         {
-          userInfo: {
+          UserInfo: {
             username: decoded.username,
             roles: roles,
           },

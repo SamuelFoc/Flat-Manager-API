@@ -48,7 +48,7 @@ const login = async (req, res) => {
   );
 
   // * Save refresh token to found user
-  foundUser.update({ refresh_token: refresh_token });
+  foundUser.update({ refreshToken: refresh_token });
 
   // * Set up refresh token to cookies
   res.cookie("jwt", refresh_token, {
