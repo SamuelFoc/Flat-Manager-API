@@ -6,11 +6,14 @@ const sequelize = require("../util/database");
 exports.getAll = (req, res) => {
   sequelize
     .sync()
+    // .then(() => {
+    //   return User.findOne({ where: { email: req.params.email } });
+    // })
+    // .then((user) => {
+    //   return user.getResponsibilities();
+    // })
     .then(() => {
-      return User.findOne({ where: { email: req.params.email } });
-    })
-    .then((user) => {
-      return user.getResponsibilities();
+      return Responsibility.findAll();
     })
     .then((responsibilities) => {
       return res.status(200).json({
@@ -51,33 +54,32 @@ exports.getOne = (req, res) => {
 
 exports.createOne = (req, res) => {
   let count;
-  const input = req.body;
+  const { title, description, deadline, done, priority } = req.body;
   var tomorrow = new Date();
 
   const RESPONSIBILITY_MODEL = {
-    title: input.title ? input.title : "Responsibility",
-    description: input.description
-      ? input.description
-      : "No descripition given by author.",
-    deadline: input.deadline
-      ? input.deadline
-      : tomorrow.setDate(tomorrow.getDate() + 1),
-    done: input.done ? input.done : false,
-    urgent: input.priority,
+    title: title ? title : "Responsibility",
+    description: description ? description : "No descripition given by author.",
+    deadline: deadline ? deadline : tomorrow.setDate(tomorrow.getDate() + 1),
+    done: done ? done : false,
+    urgent: priority,
   };
 
   sequelize
     .sync()
+    // .then(() => {
+    //   return User.findOne({
+    //     where: {
+    //       email: req.params.email,
+    //     },
+    //   });
+    // })
+    // .then(async (user) => {
+    //   count = user.getResponsibilities().length;
+    //   return user.createResponsibility(RESPONSIBILITY_MODEL);
+    // })
     .then(() => {
-      return User.findOne({
-        where: {
-          email: req.params.email,
-        },
-      });
-    })
-    .then(async (user) => {
-      count = user.getResponsibilities().length;
-      return user.createResponsibility(RESPONSIBILITY_MODEL);
+      return Responsibility.create(RESPONSIBILITY_MODEL);
     })
     .then((responsibility) => {
       return res.status(200).json({
@@ -94,19 +96,22 @@ exports.createOne = (req, res) => {
 exports.deleteOne = (req, res) => {
   sequelize
     .sync()
+    // .then(() => {
+    //   return User.findOne({ where: { email: req.params.email } });
+    // })
+    // .then(async (user) => {
+    //   const responsibility = await Responsibility.findOne({
+    //     where: { id: parseInt(req.params.id) },
+    //   });
+    //   await user.removeResponsibility(responsibility);
+    //   return await Responsibility.destroy({
+    //     where: {
+    //       id: parseInt(req.params.id),
+    //     },
+    //   });
+    // })
     .then(() => {
-      return User.findOne({ where: { email: req.params.email } });
-    })
-    .then(async (user) => {
-      const responsibility = await Responsibility.findOne({
-        where: { id: parseInt(req.params.id) },
-      });
-      await user.removeResponsibility(responsibility);
-      return await Responsibility.destroy({
-        where: {
-          id: parseInt(req.params.id),
-        },
-      });
+      return Responsibility.destroy({ where: { id: req.params.id } });
     })
     .then((responsibility) => {
       return res.status(200).json({
@@ -121,32 +126,33 @@ exports.deleteOne = (req, res) => {
 };
 
 exports.updateOne = (req, res) => {
-  const input = req.body;
+  const { title, description, deadline, done, priority } = req.body;
 
   sequelize
     .sync()
+    // .then(() => {
+    //   return Responsibility.findOne({
+    //     where: {
+    //       [Op.and]: [{ userEmail: req.params.email }, { id: req.params.id }],
+    //     },
+    //   });
+    // })
     .then(() => {
-      return Responsibility.findOne({
-        where: {
-          [Op.and]: [{ userEmail: req.params.email }, { id: req.params.id }],
-        },
-      });
+      return Responsibility.findOne({ where: { id: req.params.id } });
     })
     .then((responsibility) => {
       return {
-        title: input.title ? input.title : responsibility.title,
-        description: input.description
-          ? input.description
-          : responsibility.description,
-        deadline: input.deadline ? input.deadline : responsibility.deadline,
-        done: input.done ? input.done : responsibility.done,
-        urgent: input.priority ? input.priority : responsibility.urgent,
+        title: title ? title : responsibility.title,
+        description: description ? description : responsibility.description,
+        deadline: deadline ? deadline : responsibility.deadline,
+        done: done !== undefined ? done : responsibility.done,
+        urgent: priority ? priority : responsibility.urgent,
       };
     })
     .then((resp_model) => {
       return Responsibility.update(resp_model, {
         where: {
-          [Op.and]: [{ userEmail: req.params.email }, { id: req.params.id }],
+          id: req.params.id,
         },
       });
     })
