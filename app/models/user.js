@@ -45,6 +45,9 @@ const User = sequelize.define(
       type: DataTypes.BOOLEAN,
       allowNull: false,
     },
+    refreshToken: {
+      type: DataTypes.STRING,
+    },
   },
   {
     timestamps: true,
