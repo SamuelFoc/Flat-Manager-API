@@ -7,6 +7,9 @@ const cookieParser = require("cookie-parser");
 // * CORS POLICY
 const cors = require("cors");
 const corsOptions = require("./config/corsOptions");
+const verifyJWT = require("./middleware/verifyToken");
+// * PERFORMANCE DEV
+const morgan = require("morgan");
 // * ENVIRONMENT
 require("dotenv").config();
 
@@ -15,8 +18,16 @@ app.use(cors(corsOptions));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cookieParser());
+app.use(
+  morgan(":method :url :status :res[content-length] - :response-time ms")
+);
 
 // ROUTES
+app.use("/login", require("./routes/authentication"));
+app.use("/logout", require("./routes/logout"));
+app.use("/refresh", require("./routes/refreshToken"));
+
+app.use(verifyJWT);
 app.use("/users", require("./routes/user"));
 app.use("/responsibilities", require("./routes/responsibility"));
 app.use("/products", require("./routes/product"));
@@ -24,9 +35,6 @@ app.use("/events", require("./routes/event"));
 app.use("/energies", require("./routes/energy"));
 app.use("/services", require("./routes/service"));
 app.use("/rooms", require("./routes/room"));
-app.use("/refresh", require("./routes/refreshToken"));
-app.use("/login", require("./routes/authentication"));
-app.use("/logout", require("./routes/logout"));
 
 // ERROR
 app.use("*", (req, res) => res.status(403).json("Page not found!"));
