@@ -8,10 +8,23 @@ exports.getAll = (req, res) => {
       return Energy.findAll();
     })
     .then((energies) => {
+      const water = energies.filter(
+        (energy) => energy.type.toLowerCase() === "water"
+      );
+      const gas = energies.filter(
+        (energy) => energy.type.toLowerCase() === "gas"
+      );
+      const electricity = energies.filter(
+        (energy) => energy.type.toLowerCase() === "electricity"
+      );
       return res.status(200).json({
         count: energies.length,
         message: `All energies found.`,
-        data: energies,
+        data: {
+          gas: gas,
+          water: water,
+          electricity: electricity,
+        },
       });
     })
     .catch((err) => {
