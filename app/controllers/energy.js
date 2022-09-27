@@ -5,7 +5,7 @@ exports.getAll = (req, res) => {
   sequelize
     .sync()
     .then(() => {
-      return Energy.findAll();
+      return Energy.findAll({ order: [["updatedAt", "DESC"]] });
     })
     .then((energies) => {
       const water = energies.filter(
@@ -51,14 +51,13 @@ exports.getOneType = (req, res) => {
 };
 
 exports.createOne = (req, res) => {
-  const input = req.body;
-
+  const { type, measured, unit_price } = req.body;
   const ENERGY_MODEL = {
-    type: input.type ? input.type : new Error("Type is required!"),
-    measured_value: input.measured_value
-      ? input.measured_value
+    type: type ? type : new Error("Type is required!"),
+    measured_value: measured
+      ? parseInt(measured)
       : new Error("Measured value is required!"),
-    unit_price: input.unit_price ? input.unit_price : 10,
+    unit_price: unit_price ? unit_price : 10,
   };
 
   sequelize
