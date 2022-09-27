@@ -4,7 +4,7 @@ const sequelize = require("../util/database");
 const Service = sequelize.define(
   "service",
   {
-    type: {
+    name: {
       type: DataTypes.STRING,
       allowNull: false,
     },
@@ -12,13 +12,15 @@ const Service = sequelize.define(
       type: DataTypes.FLOAT,
       allowNull: false,
     },
-    start_date: {
-      type: DataTypes.DATE,
+    pay_day: {
+      type: DataTypes.NUMBER,
     },
   },
   {
     timestamps: true,
   }
 );
+
+Service.sync({ alter: true });
 
 module.exports = Service;
