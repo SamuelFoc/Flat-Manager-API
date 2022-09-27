@@ -1,9 +1,12 @@
 const User = require("../models/user");
+const Unit = require("../models/units");
 const Role = require("../models/role");
+const Service = require("../models/service");
 const Energy = require("../models/energy");
 const sequelize = require("../util/database");
 const bcrypt = require("bcrypt");
 
+// ! ADMIN USERS CONTROLLERS
 exports.registerUser = async (req, res) => {
   const { user, pwd, email, contact, age, work, isAdmin, room } = req.body;
 
@@ -87,6 +90,44 @@ exports.createAdmin = async () => {
     });
 };
 
+exports.deleteUser = (req, res) => {
+  sequelize
+    .sync()
+    .then(() => {
+      return User.destroy({ where: { username: req.params.username } });
+    })
+    .then((user) => {
+      return res.status(200).json({
+        count: 1,
+        message: `User ${req.params.username} removed.`,
+        data: user,
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+      return res.status(500).json({ ERROR: err.message });
+    });
+};
+
+exports.getAllUsers = (req, res) => {
+  sequelize
+    .sync()
+    .then(() => {
+      return User.findAll();
+    })
+    .then((users) => {
+      return res.status(200).json({
+        count: 1,
+        message: `All users found.`,
+        data: users,
+      });
+    })
+    .catch((err) => {
+      return res.status(500).json({ ERROR: err.message });
+    });
+};
+
+// ! ADMIN ENERGIES CONTROLLERS
 exports.getAllEnergies = (req, res) => {
   sequelize
     .sync()
@@ -129,6 +170,153 @@ exports.deleteEnergy = (req, res) => {
         count: 1,
         message: `Enery record removed.`,
         data: energy,
+      });
+    })
+    .catch((err) => {
+      return res.status(500).json({ ERROR: err.message });
+    });
+};
+
+// ! ADMIN SERVICES CONTROLLERS
+exports.createService = (req, res) => {
+  const { name, monthly_price, pay_day } = req.body;
+
+  const SERVICE_MODEL = {
+    name: name ? name : new Error("Name is required!"),
+    monthly_price: monthly_price ? monthly_price : 0,
+    pay_day: pay_day ? pay_day : 15,
+  };
+
+  sequelize
+    .sync()
+    .then(() => {
+      return Service.create(SERVICE_MODEL);
+    })
+    .then((service) => {
+      return res.status(200).json({
+        count: 1,
+        message: `Service has been recorded.`,
+        data: service,
+      });
+    })
+    .catch((err) => {
+      return res.status(500).json({ ERROR: err.message });
+    });
+};
+
+exports.deleteService = (req, res) => {
+  sequelize
+    .sync()
+    .then(() => {
+      return Service.destroy({ where: { id: req.params.id } });
+    })
+    .then((service) => {
+      return res.status(200).json({
+        count: 1,
+        message: `Service removed.`,
+        data: service,
+      });
+    })
+    .catch((err) => {
+      return res.status(500).json({ ERROR: err.message });
+    });
+};
+
+exports.updateService = (req, res) => {
+  const input = req.body;
+
+  sequelize
+    .sync()
+    .then(() => {
+      return Service.findOne({
+        where: {
+          id: req.params.id,
+        },
+      });
+    })
+    .then((service) => {
+      const SERVICE_MODEL = {
+        type: input.type ? input.type : service.type,
+        monthly_price: input.monthly_price
+          ? input.monthly_price
+          : service.monthly_price,
+        start_date: input.start_date ? input.start_date : service.start_date,
+      };
+
+      return Service.update(SERVICE_MODEL, {
+        where: {
+          id: req.params.id,
+        },
+      });
+    })
+    .then((event) => {
+      return res.status(200).json({
+        count: 1,
+        message: `Service updated.`,
+        data: event,
+      });
+    })
+    .catch((err) => {
+      return res.status(500).json({ ERROR: err.message });
+    });
+};
+
+// ! ADMIN UNITS CONTROLLERS
+exports.createUnit = (req, res) => {
+  const { name, unit_price, unit } = req.body;
+
+  const UNIT_MODEL = {
+    name: name ? name : new Error("Name is required!"),
+    unit_price: unit_price ? unit_price : 0,
+    unit: unit ? unit : "m3",
+  };
+
+  sequelize
+    .sync()
+    .then(() => {
+      return Unit.create(UNIT_MODEL);
+    })
+    .then((unit) => {
+      return res.status(200).json({
+        count: 1,
+        message: `Unit has been recorded.`,
+        data: unit,
+      });
+    })
+    .catch((err) => {
+      return res.status(500).json({ ERROR: err.message });
+    });
+};
+
+exports.getAllUnits = (req, res) => {
+  sequelize
+    .sync()
+    .then(() => {
+      return Unit.findAll();
+    })
+    .then((units) => {
+      return res.status(200).json({
+        count: units?.length,
+        message: `All units found.`,
+        data: units,
+      });
+    })
+    .catch((err) => {
+      return res.status(500).json({ ERROR: err.message });
+    });
+};
+
+exports.deleteUnit = (req, res) => {
+  sequelize
+    .sync()
+    .then(() => {
+      return Unit.destroy({ where: { id: req.params.id } });
+    })
+    .then((unit) => {
+      return res.status(200).json({
+        count: 1,
+        message: `Unit removed.`,
+        data: unit,
       });
     })
     .catch((err) => {

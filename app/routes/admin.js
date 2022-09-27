@@ -3,7 +3,15 @@ const controller = require("../controllers/admin");
 
 router
   .post("/register", controller.registerUser)
+  .post("/services", controller.createService)
+  .post("/units", controller.createUnit)
+  .put("/service/:id", controller.updateService)
   .get("/energies", controller.getAllEnergies)
-  .delete("/energy/:id", controller.deleteEnergy);
+  .get("/units", controller.getAllUnits)
+  .get("/users", controller.getAllUsers)
+  .delete("/energy/:id", controller.deleteEnergy)
+  .delete("/service/:id", controller.deleteService)
+  .delete("/unit/:id", controller.deleteUnit)
+  .delete("/user/:username", controller.deleteUser);
 
 module.exports = router;
