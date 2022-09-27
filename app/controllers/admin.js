@@ -178,6 +178,24 @@ exports.deleteEnergy = (req, res) => {
 };
 
 // ! ADMIN SERVICES CONTROLLERS
+exports.getAllServices = (req, res) => {
+  sequelize
+    .sync()
+    .then(() => {
+      return Service.findAll();
+    })
+    .then((services) => {
+      return res.status(200).json({
+        count: 1,
+        message: `All services found.`,
+        data: services,
+      });
+    })
+    .catch((err) => {
+      return res.status(500).json({ ERROR: err.message });
+    });
+};
+
 exports.createService = (req, res) => {
   const { name, monthly_price, pay_day } = req.body;
 

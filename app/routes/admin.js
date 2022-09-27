@@ -9,6 +9,7 @@ router
   .get("/energies", controller.getAllEnergies)
   .get("/units", controller.getAllUnits)
   .get("/users", controller.getAllUsers)
+  .get("/services", controller.getAllServices)
   .delete("/energy/:id", controller.deleteEnergy)
   .delete("/service/:id", controller.deleteService)
   .delete("/unit/:id", controller.deleteUnit)
