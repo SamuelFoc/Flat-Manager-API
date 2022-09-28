@@ -51,13 +51,13 @@ exports.getOneType = (req, res) => {
 };
 
 exports.createOne = (req, res) => {
-  const { type, measured, unit_price } = req.body;
+  const { type, measured, date } = req.body;
   const ENERGY_MODEL = {
     type: type ? type : new Error("Type is required!"),
     measured_value: measured
-      ? parseInt(measured)
+      ? measured
       : new Error("Measured value is required!"),
-    unit_price: unit_price ? unit_price : 10,
+    measured_at: date ? date : new Date(),
   };
 
   sequelize
@@ -96,7 +96,7 @@ exports.deleteOne = (req, res) => {
 };
 
 exports.updateOne = (req, res) => {
-  const input = req.body;
+  const { type, measured_value, date } = req.body;
 
   sequelize
     .sync()
@@ -109,11 +109,9 @@ exports.updateOne = (req, res) => {
     })
     .then((energy) => {
       const ENERGY_MODEL = {
-        type: input.type ? input.type : energy.type,
-        measured_value: input.measured_value
-          ? input.measured_value
-          : energy.measured_value,
-        unit_price: input.unit_price ? input.unit_price : energy.unit_price,
+        type: type ? type : energy.type,
+        measured_value: measured_value ? measured_value : energy.measured_value,
+        measured_at: date ? date : energy.measured_at,
       };
 
       return Energy.update(ENERGY_MODEL, {

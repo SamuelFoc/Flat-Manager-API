@@ -12,14 +12,15 @@ const Energy = sequelize.define(
       type: DataTypes.FLOAT,
       allowNull: false,
     },
-    unit_price: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
+    measured_at: {
+      type: DataTypes.DATE,
     },
   },
   {
     timestamps: true,
   }
 );
+
+Energy.sync({ alter: true });
 
 module.exports = Energy;
