@@ -45,6 +45,10 @@ exports.registerUser = async (req, res) => {
       }
       console.log("Room created");
       const role = await user.createRole({ roleName: "User" });
+      if (isAdmin) {
+        roleAdmin = await user.createRole({ roleName: "Admin" });
+        await user.addRole(roleAdmin);
+      }
       return user.addRole(role);
     })
     .then(() => {
