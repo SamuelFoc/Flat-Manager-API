@@ -1,6 +1,7 @@
 const { DataTypes } = require("sequelize");
 const Room = require("./room");
 const sequelize = require("../util/database");
+require("dotenv").config();
 
 const User = sequelize.define(
   "user",
@@ -56,5 +57,9 @@ const User = sequelize.define(
 
 User.belongsTo(Room);
 Room.hasMany(User);
+
+if (process.env?.DEV) {
+  User.sync({ alter: true });
+}
 
 module.exports = User;

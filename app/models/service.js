@@ -1,5 +1,6 @@
 const { Sequelize, DataTypes } = require("sequelize");
 const sequelize = require("../util/database");
+require("dotenv").config();
 
 const Service = sequelize.define(
   "service",
@@ -21,6 +22,8 @@ const Service = sequelize.define(
   }
 );
 
-Service.sync({ alter: true });
+if (process.env?.DEV) {
+  Service.sync({ alter: true });
+}
 
 module.exports = Service;

@@ -34,6 +34,4 @@ const Responsibility = sequelize.define(
 Responsibility.belongsTo(User);
 User.hasMany(Responsibility);
 
-//Responsibility.sync({ force: true });
-
 module.exports = Responsibility;

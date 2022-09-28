@@ -1,5 +1,6 @@
 const { Sequelize, DataTypes } = require("sequelize");
 const sequelize = require("../util/database");
+require("dotenv").config();
 
 const Unit = sequelize.define(
   "unit",
@@ -21,6 +22,8 @@ const Unit = sequelize.define(
   }
 );
 
-Unit.sync({ alter: true });
+if (process.env?.DEV) {
+  Unit.sync({ alter: true });
+}
 
 module.exports = Unit;

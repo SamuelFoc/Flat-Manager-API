@@ -1,5 +1,6 @@
 const { Sequelize, DataTypes } = require("sequelize");
 const sequelize = require("../util/database");
+require("dotenv").config();
 
 const Energy = sequelize.define(
   "energy",
@@ -21,6 +22,8 @@ const Energy = sequelize.define(
   }
 );
 
-Energy.sync({ alter: true });
+if (process.env?.DEV) {
+  Energy.sync({ alter: true });
+}
 
 module.exports = Energy;

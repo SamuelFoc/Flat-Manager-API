@@ -18,4 +18,8 @@ const Role = sequelize.define(
 Role.belongsTo(User);
 User.hasMany(Role);
 
+if (process.env?.DEV) {
+  Role.sync({ alter: true });
+}
+
 module.exports = Role;
