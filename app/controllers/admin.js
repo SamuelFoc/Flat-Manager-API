@@ -9,7 +9,7 @@ const bcrypt = require("bcrypt");
 // ! ADMIN USERS CONTROLLERS
 exports.registerUser = async (req, res) => {
   const { user, pwd, email, contact, age, work, isAdmin, room } = req.body;
-
+  console.log(req.body);
   // * Check for required parameters
   if (!user || !pwd || !email)
     return res
@@ -124,6 +124,51 @@ exports.getAllUsers = (req, res) => {
         count: 1,
         message: `All users found.`,
         data: users,
+      });
+    })
+    .catch((err) => {
+      return res.status(500).json({ ERROR: err.message });
+    });
+};
+
+exports.updateUser = async (req, res) => {
+  const input = req.body;
+  let count;
+  let USER_MODEL;
+
+  sequelize
+    .sync()
+    .then(async () => {
+      count = await User.count();
+      return User.findOne({
+        where: {
+          username: req.params.username,
+        },
+      });
+    })
+    .then((user) => {
+      return (USER_MODEL = {
+        username: input?.user ? input.user : user.username,
+        email: input?.email ? input.email : user.email,
+        password: input?.pwd ? input.password : user.password,
+        contact: input?.contact ? input.contact : user.contact,
+        age: input?.age ? input.age : user.age,
+        work: input?.work ? input.work : user.work,
+        isAdmin: input?.isAdmin ? input.isAdmin : user.isAdmin,
+      });
+    })
+    .then(() => {
+      return User.update(USER_MODEL, {
+        where: {
+          username: req.params.username,
+        },
+      });
+    })
+    .then((user) => {
+      return res.status(200).json({
+        count: count,
+        message: "User updated successfully.",
+        data: user,
       });
     })
     .catch((err) => {

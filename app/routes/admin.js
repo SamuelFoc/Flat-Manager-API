@@ -6,6 +6,7 @@ router
   .post("/services", controller.createService)
   .post("/units", controller.createUnit)
   .put("/service/:id", controller.updateService)
+  .put("/user/:username", controller.updateUser)
   .get("/energies", controller.getAllEnergies)
   .get("/units", controller.getAllUnits)
   .get("/users", controller.getAllUsers)
