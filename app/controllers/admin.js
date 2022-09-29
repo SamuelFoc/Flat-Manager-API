@@ -12,16 +12,14 @@ exports.registerUser = async (req, res) => {
   console.log(req.body);
   // * Check for required parameters
   if (!user || !pwd || !email)
-    return res
-      .status(400)
-      .json({ message: "Username, email and passsword required!" });
+    return res.status(400).end("Username, email and passsword required!");
 
   // * Check if user already exists
   const userExists = await User.findOne({
     where: { username: user },
   });
   if (userExists)
-    return res.status(409).send("User with that name already exists!");
+    return res.status(409).end("User with that name already exists!");
 
   // * Hash the password
   const hashedPwd = await bcrypt.hash(pwd, 10);
@@ -43,7 +41,7 @@ exports.registerUser = async (req, res) => {
         const foundRoom = await Room.findOne({ where: { name: room } });
         await foundRoom.addUser(user);
       }
-      console.log("Room created");
+
       const role = await user.createRole({ roleName: "User" });
       if (isAdmin) {
         roleAdmin = await user.createRole({ roleName: "Admin" });
@@ -55,7 +53,7 @@ exports.registerUser = async (req, res) => {
       res.status(200).send("User created successfully!");
     })
     .catch((err) => {
-      res.status(400).send(err);
+      res.status(400).end("Server side error: " + err.message);
       console.log(err);
     });
 };
@@ -109,7 +107,7 @@ exports.deleteUser = (req, res) => {
     })
     .catch((err) => {
       console.log(err);
-      return res.status(500).json({ ERROR: err.message });
+      return res.status(500).end("Server side error: " + err.message);
     });
 };
 
@@ -127,7 +125,7 @@ exports.getAllUsers = (req, res) => {
       });
     })
     .catch((err) => {
-      return res.status(500).json({ ERROR: err.message });
+      return res.status(500).end("Server side error: " + err.message);
     });
 };
 
@@ -172,7 +170,7 @@ exports.updateUser = async (req, res) => {
       });
     })
     .catch((err) => {
-      return res.status(500).json({ ERROR: err.message });
+      return res.status(500).end("Server side error: " + err.message);
     });
 };
 
@@ -204,7 +202,39 @@ exports.getAllEnergies = (req, res) => {
       });
     })
     .catch((err) => {
-      return res.status(500).json({ ERROR: err.message });
+      return res.status(500).end("Server side error: " + err.message);
+    });
+};
+
+exports.createEnergy = (req, res) => {
+  const { type, measured, date } = req.body;
+  console.log(req.body);
+  let ENERGY_MODEL;
+
+  try {
+    ENERGY_MODEL = {
+      type: type,
+      measured_value: measured,
+      measured_at: date ? date : new Date(),
+    };
+  } catch (error) {
+    return res.status(400).end("Measured value and type is required!");
+  }
+  console.log(ENERGY_MODEL);
+  sequelize
+    .sync()
+    .then(() => {
+      return Energy.create(ENERGY_MODEL);
+    })
+    .then((energy) => {
+      return res.status(200).json({
+        count: 1,
+        message: `Measured value has been written.`,
+        data: energy,
+      });
+    })
+    .catch((err) => {
+      return res.status(500).end("Measured value and type can't be empty.");
     });
 };
 
@@ -222,7 +252,44 @@ exports.deleteEnergy = (req, res) => {
       });
     })
     .catch((err) => {
-      return res.status(500).json({ ERROR: err.message });
+      return res.status(500).end("Server side error: " + err.message);
+    });
+};
+
+exports.updateEnergy = (req, res) => {
+  const { type, measured, date } = req.body;
+
+  sequelize
+    .sync()
+    .then(() => {
+      return Energy.findOne({
+        where: {
+          id: req.params.id,
+        },
+      });
+    })
+    .then((energy) => {
+      const ENERGY_MODEL = {
+        type: type ? type : energy.type,
+        measured_value: measured ? measured : energy.measured_value,
+        measured_at: date ? date : energy.measured_at,
+      };
+
+      return Energy.update(ENERGY_MODEL, {
+        where: {
+          id: req.params.id,
+        },
+      });
+    })
+    .then((event) => {
+      return res.status(200).json({
+        count: 1,
+        message: `Record updated.`,
+        data: event,
+      });
+    })
+    .catch((err) => {
+      return res.status(500).end("Server side error: " + err.message);
     });
 };
 
@@ -241,7 +308,7 @@ exports.getAllServices = (req, res) => {
       });
     })
     .catch((err) => {
-      return res.status(500).json({ ERROR: err.message });
+      return res.status(500).end("Server side error: " + err.message);
     });
 };
 
@@ -267,7 +334,7 @@ exports.createService = (req, res) => {
       });
     })
     .catch((err) => {
-      return res.status(500).json({ ERROR: err.message });
+      return res.status(500).end("Server side error: " + err.message);
     });
 };
 
@@ -285,7 +352,7 @@ exports.deleteService = (req, res) => {
       });
     })
     .catch((err) => {
-      return res.status(500).json({ ERROR: err.message });
+      return res.status(500).end("Server side error: " + err.message);
     });
 };
 
@@ -303,11 +370,11 @@ exports.updateService = (req, res) => {
     })
     .then((service) => {
       const SERVICE_MODEL = {
-        type: input.type ? input.type : service.type,
+        name: input.name ? input.name : service.name,
         monthly_price: input.monthly_price
           ? input.monthly_price
           : service.monthly_price,
-        start_date: input.start_date ? input.start_date : service.start_date,
+        pay_day: input.pay_day ? input.pay_day : service.pay_day,
       };
 
       return Service.update(SERVICE_MODEL, {
@@ -324,7 +391,7 @@ exports.updateService = (req, res) => {
       });
     })
     .catch((err) => {
-      return res.status(500).json({ ERROR: err.message });
+      return res.status(500).end("Server side error: " + err.message);
     });
 };
 
@@ -351,7 +418,7 @@ exports.createUnit = (req, res) => {
       });
     })
     .catch((err) => {
-      return res.status(500).json({ ERROR: err.message });
+      return res.status(500).end("Server side error: " + err.message);
     });
 };
 
@@ -369,7 +436,7 @@ exports.getAllUnits = (req, res) => {
       });
     })
     .catch((err) => {
-      return res.status(500).json({ ERROR: err.message });
+      return res.status(500).end("Server side error: " + err.message);
     });
 };
 
@@ -387,6 +454,43 @@ exports.deleteUnit = (req, res) => {
       });
     })
     .catch((err) => {
-      return res.status(500).json({ ERROR: err.message });
+      return res.status(500).end("Server side error: " + err.message);
+    });
+};
+
+exports.updateUnit = (req, res) => {
+  const input = req.body;
+  console.log(input);
+  sequelize
+    .sync()
+    .then(() => {
+      return Unit.findOne({
+        where: {
+          id: req.params.id,
+        },
+      });
+    })
+    .then((unit) => {
+      const SERVICE_MODEL = {
+        name: input.name ? input.name : unit.name,
+        unit_price: input.unit_price ? input.unit_price : unit.unit_price,
+        unit: input.unit ? input.unit : unit.unit,
+      };
+
+      return Unit.update(SERVICE_MODEL, {
+        where: {
+          id: req.params.id,
+        },
+      });
+    })
+    .then((event) => {
+      return res.status(200).json({
+        count: 1,
+        message: `Unit updated.`,
+        data: event,
+      });
+    })
+    .catch((err) => {
+      return res.status(500).end("Server side error: " + err.message);
     });
 };
