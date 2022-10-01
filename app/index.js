@@ -21,7 +21,7 @@ app.use(cookieParser());
 app.use(
   morgan(":method :url :status :res[content-length] - :response-time ms")
 );
-
+console.log(process.env.EXTERNAL_PORT)
 // ROUTES
 app.use("/login", require("./routes/authentication"));
 app.use("/logout", require("./routes/logout"));
