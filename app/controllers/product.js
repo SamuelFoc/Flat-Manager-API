@@ -2,6 +2,8 @@ const Product = require("../models/product");
 const { Op } = require("sequelize");
 const User = require("../models/user");
 const sequelize = require("../util/database");
+const mailer = require("../emails/sendMail.js");
+const productModel = require("../emails/models/newProduct");
 
 exports.getAll = (req, res) => {
   sequelize
@@ -77,7 +79,6 @@ exports.createOne = (req, res) => {
     ownership: owner !== "" ? owner : "every",
     urgent: priority ? priority : "LOW",
   };
-  console.log(PRODUCT_MODEL);
   sequelize
     .sync()
     // .then(() => {
@@ -91,7 +92,14 @@ exports.createOne = (req, res) => {
     //   count = user.getProducts().length;
     //   return user.createProduct(PRODUCT_MODEL);
     // })
-    .then(() => {
+    .then(async () => {
+      const users = await User.findAll();
+      const emails = users.map((user) => user.email);
+      const message_info = {
+        send_to: emails,
+        subject: "🔥 Shopping Card",
+      };
+      mailer(productModel, message_info, PRODUCT_MODEL);
       return Product.create(PRODUCT_MODEL);
     })
     .then((product) => {
