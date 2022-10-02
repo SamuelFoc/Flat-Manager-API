@@ -74,9 +74,9 @@ exports.createOne = (req, res) => {
   const { name, type, price, owner, priority } = req.body;
   const PRODUCT_MODEL = {
     name: name ? name : "Product",
-    type: type ? type : new Error("Type is required!"),
+    type: type ? type : "Unknown",
     price: price ? price : 0,
-    ownership: owner !== "" ? owner : "every",
+    ownership: owner !== undefined ? owner : "every",
     urgent: priority ? priority : "LOW",
   };
   sequelize
@@ -100,6 +100,8 @@ exports.createOne = (req, res) => {
         subject: "🔥 Shopping Card",
       };
       mailer(productModel, message_info, PRODUCT_MODEL);
+    })
+    .then(() => {
       return Product.create(PRODUCT_MODEL);
     })
     .then((product) => {
