@@ -21,7 +21,7 @@ app.use(cookieParser());
 app.use(
   morgan(":method :url :status :res[content-length] - :response-time ms")
 );
-console.log(process.env.EXTERNAL_PORT)
+
 // ROUTES
 app.use("/login", require("./routes/authentication"));
 app.use("/logout", require("./routes/logout"));
@@ -34,6 +34,7 @@ app.use("/responsibilities", require("./routes/responsibility"));
 app.use("/products", require("./routes/product"));
 app.use("/events", require("./routes/event"));
 app.use("/energies", require("./routes/energy"));
+app.use("/statistics", require("./routes/statistics"));
 app.use("/services", require("./routes/service"));
 app.use("/rooms", require("./routes/room"));
 
