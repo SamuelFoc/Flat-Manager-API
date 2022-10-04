@@ -179,7 +179,7 @@ exports.getAllEnergies = (req, res) => {
   sequelize
     .sync()
     .then(() => {
-      return Energy.findAll();
+      return Energy.findAll({ order: [["measured_at", "DESC"]] });
     })
     .then((energies) => {
       const water = energies.filter(

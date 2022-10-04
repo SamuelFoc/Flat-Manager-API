@@ -5,7 +5,7 @@ exports.getAll = (req, res) => {
   sequelize
     .sync()
     .then(() => {
-      return Energy.findAll({ order: [["updatedAt", "DESC"]] });
+      return Energy.findAll({ order: [["measured_at", "DESC"]] });
     })
     .then((energies) => {
       const water = energies.filter(
