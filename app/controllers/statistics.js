@@ -1,168 +1,54 @@
-const Energy = require("../models/energy");
-const Unit = require("../models/units");
-const sequelize = require("../util/database");
+const statBox = require("./utils/statisticsBox");
 
-const getAverage = (array) => {
-  let arrayLength = array.length;
-  let averagesArray = [];
-  let labels = [];
+exports.getAverages = async (req, res) => {
+  let electricity, water, gas;
 
-  for (let i = 1; i < arrayLength; i++) {
-    let dayDifference =
-      (new Date(array[i].measured_at) - new Date(array[i - 1].measured_at)) /
-      86400000;
-
-    let lilAverage =
-      (array[i].measured_value - array[i - 1].measured_value) / dayDifference;
-
-    labels.push(
-      `From ${new Date(array[i - 1].measured_at).toLocaleDateString(
-        "en-GB"
-      )} to ${new Date(array[i].measured_at).toLocaleDateString("en-GB")}`
-    );
-    averagesArray.push(lilAverage);
+  try {
+    electricity = await statBox._getAvgOf("Electricity");
+    water = await statBox._getAvgOf("Water");
+    gas = await statBox._getAvgOf("Gas");
+  } catch (error) {
+    res.status(500).end(error.message);
   }
-  return {
-    avg: averagesArray,
-    labels: labels,
-  };
+
+  res.status(200).json({
+    electricity: electricity,
+    water: water,
+    gas: gas,
+  });
 };
 
-const getDiff = (array) => {
-  let arrayLength = array.length;
-  let valueDiffsArray = [];
-  let labels = [];
+exports.getExpenses = async (req, res) => {
+  let electricity, water, gas;
 
-  for (let i = 1; i < arrayLength; i++) {
-    valueDiffsArray.push(array[i].measured_value - array[i - 1].measured_value);
-
-    labels.push(
-      `From ${new Date(array[i - 1].measured_at).toLocaleDateString(
-        "en-GB"
-      )} to ${new Date(array[i].measured_at).toLocaleDateString("en-GB")}`
-    );
+  try {
+    electricity = await statBox._getAvgExpensesOf("Electricity");
+    water = await statBox._getAvgExpensesOf("Water");
+    gas = await statBox._getAvgExpensesOf("Gas");
+  } catch (error) {
+    res.status(500).end(error.message);
   }
-  return {
-    valueDifference: valueDiffsArray,
-    labels: labels,
-  };
+  res.status(200).json({
+    electricity: electricity,
+    water: water,
+    gas: gas,
+  });
 };
 
-exports.getAverages = (req, res) => {
-  sequelize
-    .sync()
-    .then(async () => {
-      return await Energy.findAll({ order: [["measured_at", "ASC"]] });
-    })
-    .then((energies) => {
-      const water = energies.filter(
-        (energy) => energy.type.toLowerCase() === "water"
-      );
-      const gas = energies.filter(
-        (energy) => energy.type.toLowerCase() === "gas"
-      );
-      const electricity = energies.filter(
-        (energy) => energy.type.toLowerCase() === "electricity"
-      );
+exports.getSummary = async (req, res) => {
+  let electricity, water, gas;
 
-      const waterAvg = water.length > 1 ? getAverage(water) : [];
-      const gasAvg = gas.length > 1 ? getAverage(gas) : [];
-      const electricityAvg =
-        electricity.length > 1 ? getAverage(electricity) : [];
+  try {
+    electricity = await statBox._createSumaryOf("Electricity");
+    water = await statBox._createSumaryOf("Water");
+    gas = await statBox._createSumaryOf("Gas");
+  } catch (error) {
+    res.status(500).end(error.message);
+  }
 
-      return {
-        electricity: electricityAvg,
-        water: waterAvg,
-        gas: gasAvg,
-      };
-    })
-    .then((data) => {
-      res.status(200).send(data);
-    })
-    .catch((err) => {
-      return res.status(500).send({ ERROR: err.message });
-    });
-};
-
-exports.getExpenses = (req, res) => {
-  let eleExpenses = [];
-  let waterExpenses = [];
-  let gasExpenses = [];
-  let eleLabels, gasLabels, waterLabels;
-
-  sequelize
-    .sync()
-    .then(async () => {
-      const units = await Unit.findAll();
-      const energies = await Energy.findAll({
-        order: [["measured_at", "ASC"]],
-      });
-      return { energies: energies, units: units };
-    })
-    .then((data) => {
-      const water = data.energies.filter(
-        (energy) => energy.type.toLowerCase() === "water"
-      );
-      const gas = data.energies.filter(
-        (energy) => energy.type.toLowerCase() === "gas"
-      );
-      const electricity = data.energies.filter(
-        (energy) => energy.type.toLowerCase() === "electricity"
-      );
-
-      // * Unit prices of individual energies
-      const eleUnit = data.units.filter(
-        (unit) => unit.name.toLowerCase() === "electricity"
-      );
-      const watUnit = data.units.filter(
-        (unit) => unit.name.toLowerCase() === "water"
-      );
-      const gasUnit = data.units.filter(
-        (unit) => unit.name.toLowerCase() === "gas"
-      );
-
-      // * Differences between measures
-      if (water.length > 1 && watUnit) {
-        const { avg, labels } = getAverage(water);
-        for (let i = 0; i < avg.length; i++) {
-          waterExpenses.push(avg[i] * watUnit[0].unit_price);
-        }
-        waterLabels = labels;
-      }
-      if (gas.length > 1 && watUnit) {
-        const { avg, labels } = getAverage(gas);
-        for (let i = 0; i < avg.length; i++) {
-          gasExpenses.push(avg[i] * gasUnit[0].unit_price);
-        }
-        gasLabels = labels;
-      }
-      if (electricity.length > 1 && watUnit) {
-        const { avg, labels } = getAverage(electricity);
-        for (let i = 0; i < avg.length; i++) {
-          eleExpenses.push(avg[i] * eleUnit[0].unit_price);
-        }
-        eleLabels = labels;
-      }
-
-      return {
-        electricity: {
-          data: eleExpenses,
-          labels: eleLabels,
-        },
-        water: {
-          data: waterExpenses,
-          labels: waterLabels,
-        },
-        gas: {
-          data: gasExpenses,
-          labels: gasLabels,
-        },
-      };
-    })
-    .then((data) => {
-      res.status(200).send(data);
-    })
-    .catch((err) => {
-      return res.status(500).send({ ERROR: err.message });
-    });
+  res.status(200).json({
+    electricity_summary: electricity,
+    water_summary: water,
+    gas_summary: gas,
+  });
 };
