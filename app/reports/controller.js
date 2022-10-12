@@ -1,19 +1,31 @@
 const fs = require("fs");
+const { Op } = require("sequelize");
 const PDFDocument = require("./library/pdf-kit-tables");
 const stats = require("./library/statisticsBox");
 const Energy = require("../models/energy");
 
-const createConsumptionReportOf = async (Type) => {
+const createConsumptionReportOf = async (type, _from, _to) => {
   const data = await Energy.findAll({
-    where: { type: Type },
+    where: {
+      [Op.and]: [
+        { type: type },
+        {
+          measured_at: {
+            [Op.between]: [_from, _to],
+          },
+        },
+      ],
+    },
     order: [["measured_at", "DESC"]],
   });
-  const summaryData = await stats._createSumaryOf(Type);
-  const startDate = data[data.length - 1].measured_at;
-  const endDate = data[0].measured_at;
+  const summaryData = await stats._createSumaryOf(type);
+  const firstMeassure = data[data.length - 1].measured_at;
+  const lastMeassure = data[0].measured_at;
+  const from = new Date(_from);
+  const to = new Date(_to);
 
   let unit;
-  if (Type === "Electricity") {
+  if (type === "Electricity") {
     unit = "kWh";
   } else {
     unit = "m3";
@@ -21,13 +33,13 @@ const createConsumptionReportOf = async (Type) => {
 
   const doc = new PDFDocument();
 
-  doc.pipe(fs.createWriteStream(`${__dirname}/documents/${Type}_report.pdf`));
+  doc.pipe(fs.createWriteStream(`${__dirname}/documents/${type}_report.pdf`));
 
   doc
     .image(`${__dirname}/logo.png`, 50, 50, { width: 50 })
     .fillColor("black")
     .fontSize(25)
-    .text(`${Type} report`, 110, 57)
+    .text(`${type} report`, 110, 57)
     .fontSize(10)
     .text("Flat Manager App", 200, 65, { align: "right" })
     .text("Created: " + new Date().toLocaleDateString("en-GB"), 200, 80, {
@@ -73,9 +85,9 @@ const createConsumptionReportOf = async (Type) => {
     .moveDown()
     .fontSize(12)
     .text(
-      `This report contains ${Type.toLowerCase()} data from ${startDate.toLocaleDateString(
+      `This report contains ${type.toLowerCase()} data from ${from.toLocaleDateString(
         "en-GB"
-      )} to ${endDate.toLocaleDateString("en-GB")}`,
+      )} to ${to.toLocaleDateString("en-GB")}`,
       50,
       doc.page.height - 100,
       {

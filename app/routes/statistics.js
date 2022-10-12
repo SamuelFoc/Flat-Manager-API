@@ -5,6 +5,7 @@ router
   .get("/averages", controller.getAverages)
   .get("/expenses", controller.getExpenses)
   .get("/summary", controller.getSummary)
-  .get("/report/:type", controller.getReport);
+  .get("/downloadReport/:type", controller.downloadReport)
+  .post("/generateReport", controller.generateReport);
 
 module.exports = router;

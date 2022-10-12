@@ -55,7 +55,23 @@ exports.getSummary = async (req, res) => {
   });
 };
 
-exports.getReport = (req, res) => {
-  console.log("RUNS");
-  res.download(`app/reports/documents/Electricity_report.pdf`);
+exports.generateReport = (req, res) => {
+  const { type, from, to } = req.body;
+  reporter
+    .createConsumptionReportOf(type, from, to)
+    .then(() => {
+      res.status(200).json("Report generated.");
+    })
+    .catch((err) => {
+      res.send(400).json(err.message);
+    });
+};
+
+exports.downloadReport = (req, res) => {
+  console.log(req.params);
+  try {
+    res.download(`app/reports/documents/${req.params.type}_report.pdf`);
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
 };
