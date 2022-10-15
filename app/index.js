@@ -27,7 +27,7 @@ app.use("/login", require("./routes/authentication"));
 app.use("/logout", require("./routes/logout"));
 app.use("/refresh", require("./routes/refreshToken"));
 // SAFE ROUTES
-app.use(verifyJWT);
+//app.use(verifyJWT);
 app.use("/admin", require("./routes/admin"));
 app.use("/users", require("./routes/user"));
 app.use("/responsibilities", require("./routes/responsibility"));

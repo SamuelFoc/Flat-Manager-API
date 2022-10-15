@@ -3,9 +3,10 @@ const router = require("express").Router();
 
 router
   .get("/", controller.getAll)
-  .get("/:id", controller.getOne)
+  .get("/:name", controller.getOne)
   .post("/", controller.createOne)
-  .put("/:id", controller.updateOne)
-  .delete("/:id", controller.deleteOne);
+  .post("/adduser", controller.addUser)
+  .put("/:name", controller.updateOne)
+  .delete("/:name", controller.deleteOne);
 
 module.exports = router;

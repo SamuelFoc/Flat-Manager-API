@@ -7,6 +7,16 @@ const Room = sequelize.define(
     name: {
       type: DataTypes.STRING,
       allowNull: false,
+      unique: true,
+    },
+    outcomes: {
+      type: DataTypes.ARRAY(DataTypes.DECIMAL),
+    },
+    pay_day: {
+      type: DataTypes.NUMBER,
+    },
+    paid_on: {
+      type: DataTypes.DATE,
     },
   },
   {
