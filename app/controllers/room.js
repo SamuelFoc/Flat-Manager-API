@@ -30,7 +30,7 @@ exports.getOne = async (req, res) => {
         price: result,
       };
     } else {
-      const result = price / numberOfLivings;
+      const result = numberOfRoomLivings * (price / numberOfLivings);
       return {
         name: name,
         price: result,
