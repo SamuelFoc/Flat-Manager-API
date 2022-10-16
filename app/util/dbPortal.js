@@ -78,14 +78,12 @@ class Portal {
   }
 
   updateOne(req, res, ObjectModel) {
-    const input = req.body;
-
     this.database
       .sync()
       .then((data) => {
         return this.ChildModel.update(ObjectModel, {
           where: {
-            id: req.params.id,
+            name: req.params.name,
           },
         });
       })

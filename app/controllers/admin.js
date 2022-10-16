@@ -5,6 +5,7 @@ const Service = require("../models/service");
 const Energy = require("../models/energy");
 const sequelize = require("../util/database");
 const bcrypt = require("bcrypt");
+const Room = require("../models/room");
 
 // ! ADMIN USERS CONTROLLERS
 exports.registerUser = async (req, res) => {
@@ -172,6 +173,129 @@ exports.updateUser = async (req, res) => {
     .catch((err) => {
       return res.status(500).end("Server side error: " + err.message);
     });
+};
+
+// ! ADMIN ROOMS CONTROLLERS
+exports.getAllRooms = (req, res) => {
+  let roomUsers = [];
+  sequelize
+    .sync()
+    .then(async () => {
+      const rooms = await Room.findAll();
+
+      for (const room of rooms) {
+        const users = await room.getUsers();
+        roomUsers.push({ users: users, room: room });
+      }
+
+      return roomUsers;
+    })
+    .then((rooms) => {
+      return res.status(200).json({
+        count: rooms.length,
+        message: `All rooms found.`,
+        data: rooms,
+      });
+    })
+    .catch((err) => {
+      return res.status(500).end("Server side error: " + err.message);
+    });
+};
+
+exports.createRoom = (req, res) => {
+  const { name, accommodated } = req.body;
+
+  let ROOM_MODEL;
+
+  try {
+    ROOM_MODEL = {
+      name: name,
+    };
+  } catch (error) {
+    return res.status(400).end("Name is required!");
+  }
+
+  sequelize
+    .sync()
+    .then(() => {
+      return Room.create(ROOM_MODEL);
+    })
+    .then((energy) => {
+      return res.status(200).json({
+        count: 1,
+        message: `Room created.`,
+        data: energy,
+      });
+    })
+    .catch((err) => {
+      return res.status(500).end("Server side error.");
+    });
+};
+
+exports.deleteRoom = (req, res) => {
+  sequelize
+    .sync()
+    .then(() => {
+      return Room.destroy({ where: { name: req.params.name } });
+    })
+    .then((room) => {
+      return res.status(200).json({
+        count: 1,
+        message: `Room removed.`,
+        data: room,
+      });
+    })
+    .catch((err) => {
+      return res.status(500).end("Server side error: " + err.message);
+    });
+};
+
+exports.updateRoom = (req, res) => {
+  const { name } = req.body;
+
+  sequelize
+    .sync()
+    .then(() => {
+      return Room.findOne({
+        where: {
+          name: req.params.name,
+        },
+      });
+    })
+    .then(async (room) => {
+      if (req.body.users) {
+        const user = await User.findOne({
+          where: { username: req.body.users },
+        });
+        room.addUser(user);
+        room.save();
+      }
+      room.name = name ? name : room.name;
+      room.save();
+      return room;
+    })
+    .then((room) => {
+      return res.status(200).json({
+        count: 1,
+        message: `Room updated.`,
+        data: room,
+      });
+    })
+    .catch((err) => {
+      return res.status(500).end("Server side error: " + err.message);
+    });
+};
+
+exports.addUser = async (req, res) => {
+  const { username, roomname } = req.body;
+  try {
+    const user = await User.findOne({ where: { username: username } });
+    const room = await Room.findOne({ where: { name: roomname } });
+    room.addUser(user);
+    res.status(200).json("User added");
+  } catch (error) {
+    res.sendStatus(500);
+  }
 };
 
 // ! ADMIN ENERGIES CONTROLLERS

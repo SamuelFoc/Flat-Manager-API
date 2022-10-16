@@ -47,6 +47,7 @@ exports.getOne = async (req, res) => {
     livings: numberOfRoomLivings,
     units: unit_costs,
     cost: costs,
+    paid_on: room.paid_on,
   };
 
   res.status(200).json(response);
@@ -63,27 +64,14 @@ exports.createOne = (req, res) => {
   portal.createOne(req, res, roomModel);
 };
 
-exports.updateOne = (req, res) => {
-  const { name, outcomes, payDay, paidOn } = req.body;
-  const roomModel = {
-    name: name ? name : null,
-    outcomes: outcomes ? outcomes : null,
-    pay_day: payDay ? payDay : null,
-    paid_on: paidOn ? paidOn : null,
-  };
-  portal.updateOne(req, res, roomModel);
-};
+exports.updateOne = async (req, res) => {
+  const { paidOn } = req.body;
+  const room = await Room.findOne({ where: { name: req.params.name } });
 
-exports.addUser = async (req, res) => {
-  const { username, roomname } = req.body;
-  try {
-    const user = await User.findOne({ where: { username: username } });
-    const room = await Room.findOne({ where: { name: roomname } });
-    room.addUser(user);
-    res.status(200).json("User added");
-  } catch (error) {
-    res.sendStatus(500);
-  }
+  room.paid_on = paidOn;
+  room.save();
+
+  res.status(200).json(room);
 };
 
 exports.deleteOne = (req, res) => {

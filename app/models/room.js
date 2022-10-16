@@ -9,9 +9,6 @@ const Room = sequelize.define(
       allowNull: false,
       unique: true,
     },
-    outcomes: {
-      type: DataTypes.ARRAY(DataTypes.DECIMAL),
-    },
     pay_day: {
       type: DataTypes.NUMBER,
     },
