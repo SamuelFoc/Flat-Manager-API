@@ -27,7 +27,7 @@ app.use("/login", require("./routes/authentication"));
 app.use("/logout", require("./routes/logout"));
 app.use("/refresh", require("./routes/refreshToken"));
 // SAFE ROUTES
-//app.use(verifyJWT);
+app.use(verifyJWT);
 app.use("/admin", require("./routes/admin"));
 app.use("/users", require("./routes/user"));
 app.use("/responsibilities", require("./routes/responsibility"));
@@ -37,6 +37,7 @@ app.use("/energies", require("./routes/energy"));
 app.use("/statistics", require("./routes/statistics"));
 app.use("/services", require("./routes/service"));
 app.use("/rooms", require("./routes/room"));
+app.use("/payments", require("./routes/payment"));
 
 // ERROR
 app.use("*", (req, res) => res.status(403).json("Page not found!"));
