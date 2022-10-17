@@ -7,10 +7,13 @@ const Room = sequelize.define(
     name: {
       type: DataTypes.STRING,
       allowNull: false,
+      unique: true,
     },
-    number_of_livings: {
-      type: DataTypes.INTEGER,
-      defaultValue: 0,
+    pay_day: {
+      type: DataTypes.NUMBER,
+    },
+    paid_on: {
+      type: DataTypes.DATE,
     },
   },
   {
