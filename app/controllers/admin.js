@@ -3,9 +3,115 @@ const Unit = require("../models/units");
 const Role = require("../models/role");
 const Service = require("../models/service");
 const Energy = require("../models/energy");
+const Payment = require("../models/payment");
+const Room = require("../models/room");
 const sequelize = require("../util/database");
 const bcrypt = require("bcrypt");
-const Room = require("../models/room");
+
+// ! ADMIN PAYMENT CONTROLLERS
+exports.getAllPayments = (req, res) => {
+  sequelize
+    .sync()
+    .then(() => {
+      return Payment.findAll();
+    })
+    .then((payments) => {
+      return res.status(200).json({
+        count: 1,
+        message: `All payments found.`,
+        data: payments,
+      });
+    })
+    .catch((err) => {
+      console.error(err.message);
+      return res.status(500).end("Server side error: " + err.message);
+    });
+};
+
+exports.createPayment = (req, res) => {
+  const { name, iban, currency, isDefault } = req.body;
+
+  let PAYMENT_MODEL;
+
+  try {
+    PAYMENT_MODEL = {
+      user: name,
+      iban: iban,
+      currency: currency,
+      isDefault: isDefault,
+    };
+    console.log(PAYMENT_MODEL);
+  } catch (error) {
+    return res.status(400).end("All parameters are required!");
+  }
+
+  sequelize
+    .sync()
+    .then(() => {
+      return Payment.create(PAYMENT_MODEL);
+    })
+    .then((payment) => {
+      return res.status(200).json({
+        count: 1,
+        message: `Payment created.`,
+        data: payment,
+      });
+    })
+    .catch((err) => {
+      console.error(err);
+      return res.status(500).end("Server side error - " + err.message);
+    });
+};
+
+exports.deletePayment = (req, res) => {
+  sequelize
+    .sync()
+    .then(() => {
+      return Payment.destroy({ where: { user: req.params.name } });
+    })
+    .then((room) => {
+      return res.status(200).json({
+        count: 1,
+        message: `Payment removed.`,
+        data: room,
+      });
+    })
+    .catch((err) => {
+      return res.status(500).end("Server side error: " + err.message);
+    });
+};
+
+exports.updatePayment = (req, res) => {
+  const { name, iban, currency, isDefault } = req.body;
+
+  sequelize
+    .sync()
+    .then(() => {
+      return Payment.findOne({
+        where: {
+          user: req.params.name,
+        },
+      });
+    })
+    .then(async (payment) => {
+      payment.user = name ? name : payment.user;
+      payment.iban = iban ? iban : payment.iban;
+      payment.currency = currency ? currency : payment.currency;
+      payment.isDefault = isDefault === "on" ? true : false;
+      payment.save();
+      return payment;
+    })
+    .then((payment) => {
+      return res.status(200).json({
+        count: 1,
+        message: `Payment updated.`,
+        data: payment,
+      });
+    })
+    .catch((err) => {
+      return res.status(500).end("Server side error: " + err.message);
+    });
+};
 
 // ! ADMIN USERS CONTROLLERS
 exports.registerUser = async (req, res) => {
