@@ -1,8 +1,10 @@
 const Room = require("../models/room");
 const User = require("../models/user");
 const Service = require("../models/service");
+const fetch = require("node-fetch");
 const sequelize = require("../util/database");
 const Portal = require("../util/dbPortal");
+const fs = require("fs");
 
 const portal = new Portal(Room, sequelize);
 
@@ -20,6 +22,7 @@ exports.getOne = async (req, res) => {
   const numberOfLivings = users.length;
   const numberOfRooms = rooms.length;
   const numberOfRoomLivings = livings.length;
+  const livingNames = livings.map((living) => living.username);
   const unit_costs = services.map((service) => {
     const name = service.name;
     const price = service.monthly_price;
@@ -38,7 +41,6 @@ exports.getOne = async (req, res) => {
     }
   });
 
-  let sums = [];
   let costs = unit_costs.map((item) => item.price);
   costs = costs.reduce((a, b) => a + b, 0);
 
@@ -48,6 +50,7 @@ exports.getOne = async (req, res) => {
     units: unit_costs,
     cost: costs,
     paid_on: room.paid_on,
+    living_names: livingNames,
   };
 
   res.status(200).json(response);
