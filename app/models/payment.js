@@ -26,6 +26,4 @@ const Payment = sequelize.define(
   }
 );
 
-//Payment.sync({ alter: true });
-
 module.exports = Payment;

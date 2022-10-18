@@ -22,8 +22,4 @@ const Service = sequelize.define(
   }
 );
 
-if (process.env?.DEV) {
-  Service.sync({ alter: true });
-}
-
 module.exports = Service;

@@ -22,8 +22,4 @@ const Unit = sequelize.define(
   }
 );
 
-if (process.env?.DEV) {
-  Unit.sync({ alter: true });
-}
-
 module.exports = Unit;

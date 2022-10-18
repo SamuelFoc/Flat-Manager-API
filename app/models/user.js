@@ -58,8 +58,4 @@ const User = sequelize.define(
 User.belongsTo(Room);
 Room.hasMany(User);
 
-if (process.env?.DEV) {
-  User.sync({ alter: true });
-}
-
 module.exports = User;

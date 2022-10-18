@@ -22,8 +22,4 @@ const Energy = sequelize.define(
   }
 );
 
-if (process.env?.DEV) {
-  Energy.sync({ alter: true });
-}
-
 module.exports = Energy;

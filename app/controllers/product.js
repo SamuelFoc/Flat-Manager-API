@@ -99,7 +99,7 @@ exports.createOne = (req, res) => {
         send_to: emails,
         subject: "🔥 Shopping Card",
       };
-      mailer(productModel, message_info, PRODUCT_MODEL);
+      //mailer(productModel, message_info, PRODUCT_MODEL);
     })
     .then(() => {
       return Product.create(PRODUCT_MODEL);
