@@ -22,7 +22,10 @@
     "nodemon": "^2.0.19",
     "pdfkit": "^0.13.0",
     "sequelize": "^6.21.3",
-    "sqlite3": "^5.0.11"
+    "sqlite3": "^5.0.11",
+    "swagger-jsdoc": "^6.2.5",
+    "swagger-ui-express": "^4.5.0",
+    "yamljs": "^0.3.0"
   },
   "devDependencies": {
     "morgan": "^1.10.0"

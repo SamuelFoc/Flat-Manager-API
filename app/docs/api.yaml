@@ -1,0 +1,492 @@
+openapi: "3.0.0"
+info:
+  title: FlatManager API
+  description: API used to perform DB changes via UI App - FlatManager.
+  version: 1.0
+  contact:
+    email: samo.sipikal@gmail.com
+  license:
+    name: Apache 2.0
+    url: "http://apache.org/"
+  servers:
+    -url: "http://localhost:3200/"
+    description: asdad
+
+schemes: [http, https]
+
+tags:
+  - name: Authentication
+  - name: Users
+  - name: Rooms
+  - name: Products
+  - name: Energies
+  - name: Responsibilities
+
+paths:
+  # * ___ AUTHENTICATION ________________________________________
+  /login/:
+    post:
+      summary: Log in user
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - user
+                - pwd
+              properties:
+                user:
+                  type: string
+                pwd:
+                  type: string
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responsibility"
+        500:
+          descripiton: Server side error
+
+  /logout/:
+    get:
+      get:
+      summary: Log out
+      tags:
+        - Authentication
+      responses:
+        200:
+          description: Success
+        500:
+          descripiton: Server side error
+
+  /refresh/:
+    get:
+      get:
+      summary: Refresh access token
+      tags:
+        - Authentication
+      responses:
+        200:
+          description: Success
+        500:
+          descripiton: Server side error
+
+  # * ___ USERS ________________________________________
+  /users/:
+    get:
+      summary: Get all users
+      tags:
+        - Users
+      description: Get all users and their properties
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        500:
+          descripiton: Server side error
+
+  /users/{email}:
+    get:
+      summary: Get one user
+      tags:
+        - Users
+      description: Get specific user with specified email and his properties
+      parameters:
+        - $ref: "#/components/parameters/email"
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        500:
+          descripiton: Server side error
+
+  # * ___ ROOMS ________________________________________
+  /rooms/:
+    get:
+      summary: Get all rooms
+      tags:
+        - Rooms
+      description: Get all rooms
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Room"
+        500:
+          descripiton: Server side error
+
+  /rooms/{name}:
+    get:
+      summary: Get one room
+      tags:
+        - Rooms
+      description: Get specific room with specified name its properties
+      parameters:
+        - $ref: "#/components/parameters/name"
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Room"
+        500:
+          descripiton: Server side error
+
+  # * ___ PRODUCTS ________________________________________
+  /products/:
+    post:
+      summary: Create new product
+      tags:
+        - Products
+      requestBody:
+        description: Create new product with specified parameters
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Product"
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        500:
+          descripiton: Server side error
+
+    get:
+      summary: Get all products
+      tags:
+        - Products
+      description: Get all products
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        500:
+          descripiton: Server side error
+
+  /products/{id}:
+    delete:
+      summary: Delete one product
+      tags:
+        - Products
+      description: Delete specific product with specified ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          descripiton: Id of the product
+          schema:
+            type: string
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        500:
+          descripiton: Server side error
+
+    put:
+      summary: Update one product
+      tags:
+        - Products
+      parameters:
+        - name: id
+          in: path
+          required: true
+          descripiton: Id of the product
+          schema:
+            type: string
+      requestBody:
+        description: Update specific product with specified ID
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Product"
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        500:
+          descripiton: Server side error
+
+  # * ___ ENERGIES ________________________________________
+  /energies/:
+    post:
+      summary: Create new consumption record
+      tags:
+        - Energies
+      requestBody:
+        description: Create new product with specified parameters
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Energy"
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Energy"
+        500:
+          descripiton: Server side error
+
+    get:
+      summary: Get all concumption records
+      tags:
+        - Energies
+      description: Get all consumption records
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Energy"
+        500:
+          descripiton: Server side error
+
+  /energies/{type}:
+    get:
+      summary: Get one record type
+      tags:
+        - Energies
+      description: Get just one type of energy records
+      parameters:
+        - name: type
+          in: path
+          required: true
+          descripiton: Type of records
+          schema:
+            type: string
+            enum: [Electricity, Water, Gas]
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Energy"
+        500:
+          descripiton: Server side error
+
+  # * ___ RESPONSIBILITIES ________________________________________
+  /responsibilities/:
+    post:
+      summary: Create new responsibility
+      tags:
+        - Responsibilities
+      requestBody:
+        description: Create new responsibility with specified parameters
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Responsibility"
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responsibility"
+        500:
+          descripiton: Server side error
+
+    get:
+      summary: Get all responsibilities
+      tags:
+        - Responsibilities
+      description: Get all responsibilities
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responsibility"
+        500:
+          descripiton: Server side error
+
+  /responsibilities/{id}:
+    delete:
+      summary: Delete one responsibility
+      tags:
+        - Responsibilities
+      parameters:
+        - name: id
+          in: path
+          required: true
+          descripiton: Id of responsibility
+          schema:
+            type: number
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Energy"
+        500:
+          descripiton: Server side error
+
+    put:
+      summary: Update responsibility
+      tags:
+        - Responsibilities
+      parameters:
+        - name: id
+          in: path
+          required: true
+          descripiton: Id of responsibility
+          schema:
+            type: number
+      requestBody:
+        description: Update responsibility due to new parameters
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Responsibility"
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Responsibility"
+        500:
+          descripiton: Server side error
+
+components:
+  parameters:
+    email:
+      name: email
+      in: path
+      required: true
+      description: The email of the user
+      schema:
+        type: string
+
+    name:
+      name: name
+      in: path
+      required: true
+      descripiton: Name of the room
+      schema:
+        type: string
+
+  schemas:
+    User:
+      type: object
+      required:
+        - username
+        - email
+        - password
+        - contact
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        contact:
+          type: string
+        age:
+          type: integer
+        work:
+          type: string
+        isAdmin:
+          type: boolean
+    Room:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        paid_on:
+          type: date
+        pay_day:
+          type: integer
+
+    Product:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        owner:
+          type: string
+        type:
+          type: string
+        price:
+          type: number
+        priority:
+          type: string
+          enum: [LOW, HIGH, CRITICAL]
+
+    Energy:
+      type: object
+      required:
+        - measured_value
+      properties:
+        type:
+          type: string
+          enum: [Electricity, Water, Gas]
+        measured:
+          type: number
+          format: float
+        date:
+          type: string
+          format: date-time
+
+    Responsibility:
+      type: object
+      required:
+        - title
+        - description
+        - deadline
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        deadline:
+          type: string
+          format: date-time
+        done:
+          type: boolean
+        priority:
+          type: string
+          enum: [LOW, HIGH, CRITICAL]

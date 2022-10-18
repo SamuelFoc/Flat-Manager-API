@@ -10,16 +10,30 @@ const corsOptions = require("./config/corsOptions");
 const verifyJWT = require("./middleware/verifyToken");
 // * PERFORMANCE DEV
 const morgan = require("morgan");
-// * DATABASE
-const sequelize = require("./util/database");
 // * ENVIRONMENT
 require("dotenv").config();
+// * DOCUMENTATION
+const swaggerUI = require("swagger-ui-express");
+const YAML = require("yamljs");
+const swaggerJsDocs = YAML.load("./app/docs/api.yaml");
+
+const path = require("path");
+console.log(path.resolve(__dirname, "./docs/schemas/User.yaml"));
 
 // MIDLEWARE
 app.use(cors(corsOptions));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cookieParser());
+
+// DOCUMENTATION
+if (process.env.DOCS === "true") {
+  console.log(
+    "\x1b[36m%s\x1b[0m",
+    `INFO: Documentation running on: http://localhost:${process.env.EXTERNAL_PORT}/api-docs`
+  );
+  app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerJsDocs));
+}
 
 // LOGGING
 switch (process.env.LOGGING_MODE) {
