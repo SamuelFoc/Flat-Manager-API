@@ -4,7 +4,6 @@ const router = require("express").Router();
 router
   .get("/", controller.getAll)
   .get("/:type", controller.getOneType)
-  .post("/", controller.createOne)
-  .delete("/:id", controller.deleteOne);
+  .post("/", controller.createOne);
 
 module.exports = router;

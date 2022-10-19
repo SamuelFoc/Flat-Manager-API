@@ -7,6 +7,7 @@ const Payment = require("../models/payment");
 const Room = require("../models/room");
 const sequelize = require("../util/database");
 const bcrypt = require("bcrypt");
+require("dotenv").config();
 
 // ! ADMIN PAYMENT CONTROLLERS
 exports.getAllPayments = (req, res) => {
@@ -93,13 +94,13 @@ exports.updatePayment = (req, res) => {
         },
       });
     })
-    .then(async (payment) => {
-      payment.user = name ? name : payment.user;
-      payment.iban = iban ? iban : payment.iban;
-      payment.currency = currency ? currency : payment.currency;
-      payment.isDefault = isDefault === "on" ? true : false;
-      payment.save();
-      return payment;
+    .then((_payment) => {
+      _payment.user = name ? name : _payment.user;
+      _payment.iban = iban ? iban : _payment.iban;
+      _payment.currency = currency ? currency : _payment.currency;
+      _payment.isDefault = isDefault === "on" ? true : false;
+      _payment.save();
+      return _payment;
     })
     .then((payment) => {
       return res.status(200).json({
@@ -115,8 +116,7 @@ exports.updatePayment = (req, res) => {
 
 // ! ADMIN USERS CONTROLLERS
 exports.registerUser = async (req, res) => {
-  const { user, pwd, email, contact, age, work, isAdmin, room } = req.body;
-  console.log(req.body);
+  const { user, pwd, email, contact, age, work, isAdmin } = req.body;
   // * Check for required parameters
   if (!user || !pwd || !email)
     return res.status(400).end("Username, email and passsword required!");
@@ -144,11 +144,6 @@ exports.registerUser = async (req, res) => {
   // * Create user
   User.create(USER_MODEL)
     .then(async (user) => {
-      if (room !== undefined) {
-        const foundRoom = await Room.findOne({ where: { name: room } });
-        await foundRoom.addUser(user);
-      }
-
       const role = await user.createRole({ roleName: "User" });
       if (isAdmin) {
         roleAdmin = await user.createRole({ roleName: "Admin" });
@@ -156,11 +151,14 @@ exports.registerUser = async (req, res) => {
       }
       return user.addRole(role);
     })
-    .then(() => {
-      res.status(200).send("User created successfully!");
+    .then((user) => {
+      res.status(200).json({
+        message: "User created succesfully",
+        user: user,
+      });
     })
     .catch((err) => {
-      res.status(400).end("Server side error: " + err.message);
+      res.status(500).end("Server side error: " + err.message);
       console.log(err);
     });
 };
@@ -172,7 +170,7 @@ exports.createAdmin = async () => {
   // * Create user model
   const USER_MODEL = {
     username: "Admin",
-    email: "samo.sipikal@gmail.com",
+    email: process.env.EMAIL_ADDRESS,
     password: hashedPwd,
     contact: "Unknown",
     age: null,
@@ -237,10 +235,8 @@ exports.getAllUsers = (req, res) => {
 };
 
 exports.updateUser = async (req, res) => {
-  const input = req.body;
+  const { user, email, pwd, contact, age, work, isAdmin } = req.body;
   let count;
-  let USER_MODEL;
-
   sequelize
     .sync()
     .then(async () => {
@@ -251,23 +247,16 @@ exports.updateUser = async (req, res) => {
         },
       });
     })
-    .then((user) => {
-      return (USER_MODEL = {
-        username: input?.user ? input.user : user.username,
-        email: input?.email ? input.email : user.email,
-        password: input?.pwd ? input.password : user.password,
-        contact: input?.contact ? input.contact : user.contact,
-        age: input?.age ? input.age : user.age,
-        work: input?.work ? input.work : user.work,
-        isAdmin: input?.isAdmin ? input.isAdmin : user.isAdmin,
-      });
-    })
-    .then(() => {
-      return User.update(USER_MODEL, {
-        where: {
-          username: req.params.username,
-        },
-      });
+    .then((_user) => {
+      _user.username = user ? input.user : _user.username;
+      _user.email = email ? input.email : _user.email;
+      _user.password = pwd ? input.password : _user.password;
+      _user.contact = contact ? input.contact : _user.contact;
+      _user.age = age ? input.age : _user.age;
+      _user.work = work ? input.work : _user.work;
+      _user.isAdmin = isAdmin ? input.isAdmin : _user.isAdmin;
+      _user.save();
+      return _user;
     })
     .then((user) => {
       return res.status(200).json({
@@ -308,10 +297,16 @@ exports.getAllRooms = (req, res) => {
     });
 };
 
-exports.createRoom = (req, res) => {
-  const { name, accommodated } = req.body;
+exports.createRoom = async (req, res) => {
+  const { name } = req.body;
 
   let ROOM_MODEL;
+
+  const roomExists = await Room.findOne({
+    where: { name: name },
+  });
+  if (roomExists)
+    return res.status(409).end("Room with that name already exists!");
 
   try {
     ROOM_MODEL = {
@@ -368,17 +363,17 @@ exports.updateRoom = (req, res) => {
         },
       });
     })
-    .then(async (room) => {
+    .then(async (_room) => {
       if (req.body.users) {
         const user = await User.findOne({
           where: { username: req.body.users },
         });
-        room.addUser(user);
-        room.save();
+        _room.addUser(user);
+        _room.save();
       }
-      room.name = name ? name : room.name;
-      room.save();
-      return room;
+      _room.name = name ? name : _room.name;
+      _room.save();
+      return _room;
     })
     .then((room) => {
       return res.status(200).json({
@@ -438,7 +433,6 @@ exports.getAllEnergies = (req, res) => {
 
 exports.createEnergy = (req, res) => {
   const { type, measured, date } = req.body;
-  console.log(req.body);
   let ENERGY_MODEL;
 
   try {
@@ -450,7 +444,7 @@ exports.createEnergy = (req, res) => {
   } catch (error) {
     return res.status(400).end("Measured value and type is required!");
   }
-  console.log(ENERGY_MODEL);
+
   sequelize
     .sync()
     .then(() => {
@@ -464,7 +458,9 @@ exports.createEnergy = (req, res) => {
       });
     })
     .catch((err) => {
-      return res.status(500).end("Measured value and type can't be empty.");
+      return res
+        .status(500)
+        .end("Measured value and type can't be empty.", err.message);
     });
 };
 
@@ -498,24 +494,18 @@ exports.updateEnergy = (req, res) => {
         },
       });
     })
-    .then((energy) => {
-      const ENERGY_MODEL = {
-        type: type ? type : energy.type,
-        measured_value: measured ? measured : energy.measured_value,
-        measured_at: date ? date : energy.measured_at,
-      };
-
-      return Energy.update(ENERGY_MODEL, {
-        where: {
-          id: req.params.id,
-        },
-      });
+    .then((_energy) => {
+      _energy.type = type ? type : _energy.type;
+      _energy.measured_value = measured ? measured : _energy.measured_value;
+      _energy.measured_at = date ? date : _energy.measured_at;
+      _energy.save();
+      return _energy;
     })
-    .then((event) => {
+    .then((energy) => {
       return res.status(200).json({
         count: 1,
-        message: `Record updated.`,
-        data: event,
+        message: `Consumption record updated.`,
+        data: energy,
       });
     })
     .catch((err) => {
@@ -587,7 +577,7 @@ exports.deleteService = (req, res) => {
 };
 
 exports.updateService = (req, res) => {
-  const input = req.body;
+  const { name, monthly_price, pay_day } = req.body;
 
   sequelize
     .sync()
@@ -598,26 +588,20 @@ exports.updateService = (req, res) => {
         },
       });
     })
-    .then((service) => {
-      const SERVICE_MODEL = {
-        name: input.name ? input.name : service.name,
-        monthly_price: input.monthly_price
-          ? input.monthly_price
-          : service.monthly_price,
-        pay_day: input.pay_day ? input.pay_day : service.pay_day,
-      };
-
-      return Service.update(SERVICE_MODEL, {
-        where: {
-          id: req.params.id,
-        },
-      });
+    .then((_service) => {
+      _service.name = name ? name : _service.name;
+      _service.monthly_price = monthly_price
+        ? monthly_price
+        : _service.monthly_price;
+      _service.pay_day = pay_day ? pay_day : _service.pay_day;
+      _service.save();
+      return _service;
     })
-    .then((event) => {
+    .then((service) => {
       return res.status(200).json({
         count: 1,
         message: `Service updated.`,
-        data: event,
+        data: service,
       });
     })
     .catch((err) => {
@@ -689,8 +673,7 @@ exports.deleteUnit = (req, res) => {
 };
 
 exports.updateUnit = (req, res) => {
-  const input = req.body;
-  console.log(input);
+  const { name, unit_price, unit } = req.body;
   sequelize
     .sync()
     .then(() => {
@@ -700,24 +683,18 @@ exports.updateUnit = (req, res) => {
         },
       });
     })
-    .then((unit) => {
-      const SERVICE_MODEL = {
-        name: input.name ? input.name : unit.name,
-        unit_price: input.unit_price ? input.unit_price : unit.unit_price,
-        unit: input.unit ? input.unit : unit.unit,
-      };
-
-      return Unit.update(SERVICE_MODEL, {
-        where: {
-          id: req.params.id,
-        },
-      });
+    .then((_unit) => {
+      _unit.name = name ? name : _unit.name;
+      _unit.unit_price = unit_price ? unit_price : _unit.unit_price;
+      _unit.unit = unit ? unit : _unit.unit;
+      _unit.save();
+      return _unit;
     })
-    .then((event) => {
+    .then((unit) => {
       return res.status(200).json({
         count: 1,
         message: `Unit updated.`,
-        data: event,
+        data: unit,
       });
     })
     .catch((err) => {

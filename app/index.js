@@ -70,7 +70,6 @@ app.use("/admin", require("./routes/admin"));
 app.use("/users", require("./routes/user"));
 app.use("/responsibilities", require("./routes/responsibility"));
 app.use("/products", require("./routes/product"));
-app.use("/events", require("./routes/event"));
 app.use("/energies", require("./routes/energy"));
 app.use("/statistics", require("./routes/statistics"));
 app.use("/services", require("./routes/service"));

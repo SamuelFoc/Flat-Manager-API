@@ -1,10 +1,8 @@
 const Room = require("../models/room");
 const User = require("../models/user");
 const Service = require("../models/service");
-const fetch = require("node-fetch");
 const sequelize = require("../util/database");
 const Portal = require("../util/dbPortal");
-const fs = require("fs");
 
 const portal = new Portal(Room, sequelize);
 
@@ -54,29 +52,4 @@ exports.getOne = async (req, res) => {
   };
 
   res.status(200).json(response);
-};
-
-exports.createOne = (req, res) => {
-  const { name, outcomes, payDay } = req.body;
-  const roomModel = {
-    name: name ? name : new Error("Name is required!"),
-    outcomes: outcomes ? outcomes : [],
-    pay_day: payDay ? payDay : 14,
-    paid_on: null,
-  };
-  portal.createOne(req, res, roomModel);
-};
-
-exports.updateOne = async (req, res) => {
-  const { paidOn } = req.body;
-  const room = await Room.findOne({ where: { name: req.params.name } });
-
-  room.paid_on = paidOn;
-  room.save();
-
-  res.status(200).json(room);
-};
-
-exports.deleteOne = (req, res) => {
-  portal.deleteOne(req, res);
 };

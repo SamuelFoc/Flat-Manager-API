@@ -22,6 +22,8 @@ tags:
   - name: Products
   - name: Energies
   - name: Responsibilities
+  - name: Services
+  - name: Statistics
 
 paths:
   # * ___ ADMIN ________________________________________
@@ -1237,6 +1239,277 @@ paths:
                 $ref: "#/components/schemas/Responsibility"
         500:
           descripiton: Server side error
+
+  # * ___ SERVICES ________________________________________
+  /services/:
+    get:
+      summary: Get all Services
+      tags:
+        - Services
+      description: Get all Services
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Service"
+        500:
+          descripiton: Server side error
+
+  # * ___ STATISTICS ________________________________________
+  /statistics/averages/:
+    get:
+      summary: Get averages
+      tags:
+        - Statistics
+      description: Averages endpoint gives you array of average consumption for every measured type of energy and for every measured period
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  electricity:
+                    type: object
+                    properties:
+                      avg:
+                        type: array
+                        items:
+                          type: number
+                      labels:
+                        type: array
+                        items:
+                          type: string
+                  water:
+                    type: object
+                    properties:
+                      avg:
+                        type: array
+                        items:
+                          type: number
+                      labels:
+                        type: array
+                        items:
+                          type: string
+                  gas:
+                    type: object
+                    properties:
+                      avg:
+                        type: array
+                        items:
+                          type: number
+                      labels:
+                        type: array
+                        items:
+                          type: string
+        500:
+          descripiton: Server side error
+  /statistics/expenses/:
+    get:
+      summary: Get expenses
+      tags:
+        - Statistics
+      description: Expenses endpoint gives you array of average prices for every measured type of energy and for every measured period
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  electricity:
+                    type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          type: number
+                      labels:
+                        type: array
+                        items:
+                          type: string
+                  water:
+                    type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          type: number
+                      labels:
+                        type: array
+                        items:
+                          type: string
+                  gas:
+                    type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          type: number
+                      labels:
+                        type: array
+                        items:
+                          type: string
+
+        500:
+          descripiton: Server side error
+  /statistics/summary/:
+    get:
+      summary: Get summary
+      tags:
+        - Statistics
+      description: Summary endpoint gives you all informations about your consumption for every concumption type
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  electricity_summary:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      real_consumption:
+                        type: string
+                      from:
+                        type: string
+                      to:
+                        type: string
+                      days:
+                        type: number
+                      unit_price:
+                        type: number
+                      unit:
+                        type: string
+                      real_consumption_price:
+                        type: string
+                      predicted_price:
+                        type: string
+                      arrears:
+                        type: string
+                      overpayments:
+                        type: string
+                      price_currency:
+                        type: string
+                  water_summary:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      real_consumption:
+                        type: string
+                      from:
+                        type: string
+                      to:
+                        type: string
+                      days:
+                        type: number
+                      unit_price:
+                        type: number
+                      unit:
+                        type: string
+                      real_consumption_price:
+                        type: string
+                      predicted_price:
+                        type: string
+                      arrears:
+                        type: string
+                      overpayments:
+                        type: string
+                      price_currency:
+                        type: string
+                  gas_summary:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      real_consumption:
+                        type: string
+                      from:
+                        type: string
+                      to:
+                        type: string
+                      days:
+                        type: number
+                      unit_price:
+                        type: number
+                      unit:
+                        type: string
+                      real_consumption_price:
+                        type: string
+                      predicted_price:
+                        type: string
+                      arrears:
+                        type: string
+                      overpayments:
+                        type: string
+                      price_currency:
+                        type: string
+
+        500:
+          descripiton: Server side error
+  /statistics/downloadReport/{type}:
+    get:
+      summary: Get summary
+      tags:
+        - Statistics
+      description: Summary endpoint gives you all informations about your consumption for every concumption type
+      parameters:
+        - name: type
+          in: path
+          required: true
+          descripiton: Type of the Report
+          schema:
+            type: string
+      responses:
+        200:
+          description: A PDF file
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        500:
+          descripiton: Server side error
+  /statistics/generateReport/:
+    post:
+      summary: Generate new report
+      tags:
+        - Statistics
+      requestBody:
+        description: Generate new report of specified type
+        required: true
+        content:
+          application/json:
+            schema:
+              type:
+                type: string
+              from:
+                type: string
+                format: date-time
+              to:
+                type: string
+                format: date-time
+            example:
+              type: Electricity
+              from: "2022-10-01T12:03:15.329Z"
+              to: "2022-10-31T12:03:15.329Z"
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: string
+        500:
+          description: Server side error
 
 components:
   parameters:

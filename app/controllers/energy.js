@@ -76,21 +76,3 @@ exports.createOne = (req, res) => {
       return res.status(500).json({ ERROR: err.message });
     });
 };
-
-exports.deleteOne = (req, res) => {
-  sequelize
-    .sync()
-    .then(() => {
-      return Energy.destroy({ where: { id: req.params.id } });
-    })
-    .then((energy) => {
-      return res.status(200).json({
-        count: 1,
-        message: `Enery record removed.`,
-        data: energy,
-      });
-    })
-    .catch((err) => {
-      return res.status(500).json({ ERROR: err.message });
-    });
-};

@@ -1,6 +1,5 @@
 const statBox = require("./utils/statisticsBox");
 const reporter = require("../reports/controller");
-const path = require("path");
 
 exports.getAverages = async (req, res) => {
   let electricity, water, gas;

@@ -1,9 +1,9 @@
 const Product = require("../models/product");
-const { Op } = require("sequelize");
 const User = require("../models/user");
 const sequelize = require("../util/database");
 const mailer = require("../emails/sendMail.js");
 const productModel = require("../emails/models/newProduct");
+require("dotenv").config();
 
 exports.getAll = (req, res) => {
   sequelize
@@ -23,52 +23,6 @@ exports.getAll = (req, res) => {
     });
 };
 
-exports.getMyAll = (req, res) => {
-  sequelize
-    .sync()
-    .then(() => {
-      return User.findOne({ where: { email: req.params.email } });
-    })
-    .then((user) => {
-      return user.getProducts();
-    })
-    .then((products) => {
-      return res.status(200).json({
-        count: products.length,
-        message: `All products of ${req.params.email} found.`,
-        data: products,
-      });
-    })
-    .catch((err) => {
-      return res.status(500).json({ ERROR: err.message });
-    });
-};
-
-exports.getOne = (req, res) => {
-  sequelize
-    .sync()
-    .then(() => {
-      return User.findOne({ where: { email: req.params.email } });
-    })
-    .then((user) => {
-      return user.getProducts({
-        where: {
-          [Op.and]: [{ userEmail: req.params.email }, { id: req.params.id }],
-        },
-      });
-    })
-    .then((product) => {
-      return res.status(200).json({
-        count: 1,
-        message: `Product of ${req.params.email} with id: ${req.params.id} found.`,
-        data: product,
-      });
-    })
-    .catch((err) => {
-      return res.status(500).json({ ERROR: err.message });
-    });
-};
-
 exports.createOne = (req, res) => {
   let count;
   const { name, type, price, owner, priority } = req.body;
@@ -81,17 +35,6 @@ exports.createOne = (req, res) => {
   };
   sequelize
     .sync()
-    // .then(() => {
-    //   return User.findOne({
-    //     where: {
-    //       email: req.params.email,
-    //     },
-    //   });
-    // })
-    // .then(async (user) => {
-    //   count = user.getProducts().length;
-    //   return user.createProduct(PRODUCT_MODEL);
-    // })
     .then(async () => {
       const users = await User.findAll();
       const emails = users.map((user) => user.email);
@@ -99,7 +42,9 @@ exports.createOne = (req, res) => {
         send_to: emails,
         subject: "🔥 Shopping Card",
       };
-      //mailer(productModel, message_info, PRODUCT_MODEL);
+      if (process.env.SEND_MAILS === "true") {
+        mailer(productModel, message_info, PRODUCT_MODEL);
+      }
     })
     .then(() => {
       return Product.create(PRODUCT_MODEL);
@@ -119,20 +64,6 @@ exports.createOne = (req, res) => {
 exports.deleteOne = (req, res) => {
   sequelize
     .sync()
-    // .then(() => {
-    //   return User.findOne({ where: { email: req.params.email } });
-    // })
-    // .then(async (user) => {
-    //   const product = await Product.findOne({
-    //     where: { id: parseInt(req.params.id) },
-    //   });
-    //   await user.removeProduct(product);
-    //   return await Product.destroy({
-    //     where: {
-    //       id: parseInt(req.params.id),
-    //     },
-    //   });
-    // })
     .then(() => {
       return Product.destroy({ where: { id: parseInt(req.params.id) } });
     })
