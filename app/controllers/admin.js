@@ -352,7 +352,7 @@ exports.deleteRoom = (req, res) => {
 };
 
 exports.updateRoom = (req, res) => {
-  const { name } = req.body;
+  const { name, paidOn } = req.body;
 
   sequelize
     .sync()
@@ -372,6 +372,7 @@ exports.updateRoom = (req, res) => {
         _room.save();
       }
       _room.name = name ? name : _room.name;
+      _room.paid_on = paidOn ? paidOn : _room.name;
       _room.save();
       return _room;
     })
