@@ -15,6 +15,7 @@ info:
 schemes: [http, https]
 
 tags:
+  - name: Admin
   - name: Authentication
   - name: Users
   - name: Rooms
@@ -23,6 +24,857 @@ tags:
   - name: Responsibilities
 
 paths:
+  # * ___ ADMIN ________________________________________
+  /admin/register/:
+    post:
+      summary: Create new User
+      tags:
+        - Admin
+      requestBody:
+        description: Create new User with specified parameters
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+            example:
+              user: JoeAdmin
+              email: joe.admin@gmail.com
+              pwd: /Joe123&/.
+              contact: 705 000 000
+              age: 21
+              work: Joe, Inc.
+              isAdmin: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResUser"
+        400:
+          descripiton: Username, email & password are required fields
+        409:
+          description: Username is taken
+        500:
+          descripiton: Server side error
+  /admin/room/:
+    post:
+      summary: Create new Room
+      tags:
+        - Admin
+      requestBody:
+        description: Create new Room with specified name
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Room"
+            example:
+              name: Joe
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResRoom"
+        400:
+          descripiton: Name is required field
+        409:
+          description: Name is already taken
+        500:
+          description: Server side error
+  /admin/adduser/:
+    post:
+      summary: Add user to room
+      tags:
+        - Admin
+      requestBody:
+        description: Adds specified user to the choosen room
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - roomname
+              properties:
+                username:
+                  type: string
+                roomname:
+                  type: string
+            example:
+              username: JoeAdmin
+              roomname: Joe
+      responses:
+        200:
+          description: Success
+        500:
+          description: Server side error
+  /admin/service/:
+    post:
+      summary: Create new Service
+      tags:
+        - Admin
+      requestBody:
+        description: Create new Service with specified parameters
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Service"
+            example:
+              name: Internet
+              monthly_price: 600
+              pay_day: 14
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResService"
+        500:
+          description: Server side error
+  /admin/unit/:
+    post:
+      summary: Create new Unit
+      tags:
+        - Admin
+      requestBody:
+        description: Create new Unit with specified parameters
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Unit"
+            example:
+              name: Electricity
+              unit_price: 9.36
+              unit: kWh
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResUnit"
+        500:
+          description: Server side error
+  /admin/energy/:
+    post:
+      summary: Create new Energy
+      tags:
+        - Admin
+      requestBody:
+        description: Create new consumption record with specified parameters
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Energy"
+            example:
+              type: Electricity
+              measured: 25.32
+              date: 2022-10-19T08:36:57.374Z
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResEnergy"
+        500:
+          description: Server side error
+  /admin/payment/:
+    post:
+      summary: Create new Payment
+      tags:
+        - Admin
+      requestBody:
+        description: Create new Payment account with specified parameters
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Payment"
+            example:
+              name: JoeCard
+              iban: CZ65 0800 0000 1920 0014 5399
+              currency: CZK
+              isDefault: on
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResPayment"
+        500:
+          description: Server side error
+
+  /admin/users:
+    get:
+      summary: Get all Users
+      tags:
+        - Admin
+      description: Get all Users and their properties
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: number
+                  message:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        user:
+                          type: string
+                        email:
+                          type: string
+                        pwd:
+                          type: string
+                        contact:
+                          type: string
+                        age:
+                          type: integer
+                        work:
+                          type: string
+                        isAdmin:
+                          type: boolean
+                        createdAt:
+                          type: string
+                          format: date-time
+                        updatedAt:
+                          type: string
+                          format: date-time
+
+        500:
+          descripiton: Server side error
+  /admin/rooms:
+    get:
+      summary: Get all Rooms
+      tags:
+        - Admin
+      description: Get all Rooms and their properties
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: number
+                  message:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        users:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              user:
+                                type: string
+                              email:
+                                type: string
+                              pwd:
+                                type: string
+                              contact:
+                                type: string
+                              age:
+                                type: integer
+                              work:
+                                type: string
+                              isAdmin:
+                                type: boolean
+                              createdAt:
+                                type: string
+                                format: date-time
+                              updatedAt:
+                                type: string
+                                format: date-time
+                        room:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                            paid_on:
+                              type: string
+                              format: date-time
+                            pay_day:
+                              type: number
+                            createdAt:
+                              type: string
+                              format: date-time
+                            updatedAt:
+                              type: string
+                              format: date-time
+
+        500:
+          descripiton: Server side error
+  /admin/services:
+    get:
+      summary: Get all Services
+      tags:
+        - Admin
+      description: Get all Services and their properties
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: number
+                  message:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        monthly_price:
+                          type: string
+                          format: date-time
+                        pay_day:
+                          type: number
+                        createdAt:
+                          type: string
+                          format: date-time
+                        updatedAt:
+                          type: string
+                          format: date-time
+        500:
+          descripiton: Server side error
+  /admin/units:
+    get:
+      summary: Get all Units
+      tags:
+        - Admin
+      description: Get all Units and their properties
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: number
+                  message:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        unit_price:
+                          type: number
+                        unit:
+                          type: string
+                        createdAt:
+                          type: string
+                          format: date-time
+                        updatedAt:
+                          type: string
+                          format: date-time
+        500:
+          descripiton: Server side error
+  /admin/energies:
+    get:
+      summary: Get all Consumption records
+      tags:
+        - Admin
+      description: Get all Consumption records and their properties
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: number
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      gas:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            type:
+                              type: string
+                            measured:
+                              type: number
+                            date:
+                              type: string
+                              format: date-time
+                            createdAt:
+                              type: string
+                              format: date-time
+                            updatedAt:
+                              type: string
+                              format: date-time
+                      water:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            type:
+                              type: string
+                            measured:
+                              type: number
+                            date:
+                              type: string
+                              format: date-time
+                            createdAt:
+                              type: string
+                              format: date-time
+                            updatedAt:
+                              type: string
+                              format: date-time
+                      electricity:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            type:
+                              type: string
+                            measured:
+                              type: number
+                            date:
+                              type: string
+                              format: date-time
+                            createdAt:
+                              type: string
+                              format: date-time
+                            updatedAt:
+                              type: string
+                              format: date-time
+        500:
+          descripiton: Server side error
+  /admin/payments:
+    get:
+      summary: Get all Payments
+      tags:
+        - Admin
+      description: Get all Payment accounts and their properties
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: number
+                  message:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        user:
+                          type: string
+                        iban:
+                          type: string
+                        currency:
+                          type: string
+                        isDefault:
+                          type: string
+                        createdAt:
+                          type: string
+                          format: date-time
+                        updatedAt:
+                          type: string
+                          format: date-time
+        500:
+          descripiton: Server side error
+
+  /admin/user/{username}:
+    delete:
+      summary: Delete one User
+      tags:
+        - Admin
+      description: Delete specific User with specified username
+      parameters:
+        - name: username
+          in: path
+          required: true
+          descripiton: Username of the User
+          schema:
+            type: string
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: number
+                  message:
+                    type: string
+                  data:
+                    type: number
+        500:
+          descripiton: Server side error
+    put:
+      summary: Update one User
+      tags:
+        - Admin
+      parameters:
+        - name: username
+          in: path
+          required: true
+          descripiton: Username of the User
+          schema:
+            type: string
+      requestBody:
+        description: Update any property of specified User
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                contact:
+                  type: string
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResUser"
+        500:
+          descripiton: Server side error
+  /admin/room/{name}:
+    delete:
+      summary: Delete one Room
+      tags:
+        - Admin
+      description: Delete specific Room with specified name
+      parameters:
+        - name: name
+          in: path
+          required: true
+          descripiton: Name of the Room
+          schema:
+            type: string
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: number
+                  message:
+                    type: string
+                  data:
+                    type: number
+        500:
+          descripiton: Server side error
+    put:
+      summary: Update one Room
+      tags:
+        - Admin
+      parameters:
+        - name: name
+          in: path
+          required: true
+          descripiton: Name of the Room
+          schema:
+            type: string
+      requestBody:
+        description: Update specific Room with specified name
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResRoom"
+        500:
+          descripiton: Server side error
+  /admin/service/{id}:
+    delete:
+      summary: Delete one User
+      tags:
+        - Admin
+      description: Delete specific User with specified username
+      parameters:
+        - name: id
+          in: path
+          required: true
+          descripiton: Id of the Service
+          schema:
+            type: number
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: number
+                  message:
+                    type: string
+                  data:
+                    type: number
+        500:
+          descripiton: Server side error
+    put:
+      summary: Update one Service
+      tags:
+        - Admin
+      parameters:
+        - name: id
+          in: path
+          required: true
+          descripiton: Id of the Room
+          schema:
+            type: number
+      requestBody:
+        description: Update specific Service with specified id
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResRoom"
+        500:
+          descripiton: Server side error
+  /admin/unit/{id}:
+    delete:
+      summary: Delete one Unit
+      tags:
+        - Admin
+      description: Delete specific Unit with specified Id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          descripiton: Id of the Unit
+          schema:
+            type: number
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: number
+                  message:
+                    type: string
+                  data:
+                    type: number
+        500:
+          descripiton: Server side error
+    put:
+      summary: Update one Unit
+      tags:
+        - Admin
+      parameters:
+        - name: id
+          in: path
+          required: true
+          descripiton: Id of the Unit
+          schema:
+            type: number
+      requestBody:
+        description: Update specific Unit with specified id
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResUnit"
+        500:
+          descripiton: Server side error
+  /admin/energy/{id}:
+    delete:
+      summary: Delete one consumption record
+      tags:
+        - Admin
+      description: Delete specific consumption record with specified id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          descripiton: Id of the Consumption record
+          schema:
+            type: number
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: number
+                  message:
+                    type: string
+                  data:
+                    type: number
+        500:
+          descripiton: Server side error
+    put:
+      summary: Update one Energy
+      tags:
+        - Admin
+      parameters:
+        - name: id
+          in: path
+          required: true
+          descripiton: Id of the Energy
+          schema:
+            type: number
+      requestBody:
+        description: Update specific Energy with specified id
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                measured:
+                  type: number
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResEnergy"
+        500:
+          descripiton: Server side error
+  /admin/payment/{name}:
+    delete:
+      summary: Delete one Payment account
+      tags:
+        - Admin
+      description: Delete specific Payment account with specified name
+      parameters:
+        - name: name
+          in: path
+          required: true
+          descripiton: Id of the Payment account
+          schema:
+            type: string
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: number
+                  message:
+                    type: string
+                  data:
+                    type: number
+        500:
+          descripiton: Server side error
+    put:
+      summary: Update one Payment
+      tags:
+        - Admin
+      parameters:
+        - name: name
+          in: path
+          required: true
+          descripiton: Name of the Payment account
+          schema:
+            type: string
+      requestBody:
+        description: Update specific Payment account with specified name
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                iban:
+                  type: string
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResPayment"
+        500:
+          descripiton: Server side error
+
   # * ___ AUTHENTICATION ________________________________________
   /login/:
     post:
@@ -408,16 +1260,16 @@ components:
     User:
       type: object
       required:
-        - username
+        - user
         - email
-        - password
+        - pwd
         - contact
       properties:
-        username:
+        user:
           type: string
         email:
           type: string
-        password:
+        pwd:
           type: string
         contact:
           type: string
@@ -427,6 +1279,31 @@ components:
           type: string
         isAdmin:
           type: boolean
+    ResUser:
+      type: object
+      properties:
+        count:
+          type: number
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            user:
+              type: string
+            email:
+              type: string
+            pwd:
+              type: string
+            contact:
+              type: string
+            age:
+              type: integer
+            work:
+              type: string
+            isAdmin:
+              type: boolean
+
     Room:
       type: object
       required:
@@ -435,10 +1312,27 @@ components:
         name:
           type: string
         paid_on:
-          type: date
+          type: string
+          format: date-time
         pay_day:
           type: integer
-
+    ResRoom:
+      type: object
+      properties:
+        count:
+          type: number
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            name:
+              type: string
+            paid_on:
+              type: string
+              format: date-time
+            pay_day:
+              type: integer
     Product:
       type: object
       required:
@@ -455,7 +1349,27 @@ components:
         priority:
           type: string
           enum: [LOW, HIGH, CRITICAL]
-
+    ResProduct:
+      type: object
+      properties:
+        count:
+          type: number
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            name:
+              type: string
+            owner:
+              type: string
+            type:
+              type: string
+            price:
+              type: number
+            priority:
+              type: string
+              enum: [LOW, HIGH, CRITICAL]
     Energy:
       type: object
       required:
@@ -470,7 +1384,25 @@ components:
         date:
           type: string
           format: date-time
-
+    ResEnergy:
+      type: object
+      properties:
+        count:
+          type: number
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            type:
+              type: string
+              enum: [Electricity, Water, Gas]
+            measured:
+              type: number
+              format: float
+            date:
+              type: string
+              format: date-time
     Responsibility:
       type: object
       required:
@@ -490,3 +1422,121 @@ components:
         priority:
           type: string
           enum: [LOW, HIGH, CRITICAL]
+    ResResponsibility:
+      type: object
+      properties:
+        count:
+          type: number
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            title:
+              type: string
+            description:
+              type: string
+            deadline:
+              type: string
+              format: date-time
+            done:
+              type: boolean
+            priority:
+              type: string
+              enum: [LOW, HIGH, CRITICAL]
+
+    Payment:
+      type: object
+      required:
+        - name
+        - iban
+        - currency
+      properties:
+        name:
+          type: string
+        iban:
+          type: string
+        currency:
+          type: string
+        isDefault:
+          type: boolean
+          enum: [on, off]
+    ResPayment:
+      type: object
+      properties:
+        count:
+          type: number
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            name:
+              type: string
+            iban:
+              type: string
+            currency:
+              type: string
+            isDefault:
+              type: boolean
+              enum: [on, off]
+    Service:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        monthly_price:
+          type: string
+        pay_day:
+          type: number
+          format: integer
+    ResService:
+      type: object
+      properties:
+        count:
+          type: number
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            name:
+              type: string
+            monthly_price:
+              type: string
+            pay_day:
+              type: number
+              format: integer
+    Unit:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        unit_price:
+          type: number
+          format: float
+        unit:
+          type: string
+          enum: [kWh, m, m2, m3, l, kg, g]
+    ResUnit:
+      type: object
+      properties:
+        count:
+          type: number
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            name:
+              type: string
+            unit_price:
+              type: number
+              format: float
+            unit:
+              type: string
+              enum: [kWh, m, m2, m3, l, kg, g]
