@@ -41,7 +41,6 @@ exports.createPaymentAccount = (req, res) => {
       currency: currency,
       isDefault: isDefault,
     };
-    console.log(PAYMENT_ACCOUNT_MODEL);
   } catch (error) {
     return res.status(400).end("All parameters are required!");
   }
