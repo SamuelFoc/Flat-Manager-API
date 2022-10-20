@@ -1,19 +1,19 @@
-const Payment = require("../models/payment");
+const PaymentAccount = require("../models/paymentAccount");
 
 const sequelize = require("../util/database");
 
 // ! ADMIN PAYMENT CONTROLLERS
-exports.getAllPayments = (req, res) => {
+exports.getAllPaymentAccounts = (req, res) => {
   sequelize
     .sync()
     .then(() => {
-      return Payment.findAll({ where: { isDefault: true } });
+      return PaymentAccount.findAll({ where: { isDefault: true } });
     })
-    .then((payments) => {
+    .then((paymentAccounts) => {
       return res.status(200).json({
         count: 1,
-        message: `All payments found.`,
-        data: payments,
+        message: `All payment accounts found.`,
+        data: paymentAccounts,
       });
     })
     .catch((err) => {

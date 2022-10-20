@@ -3,24 +3,24 @@ const Unit = require("../models/units");
 const Role = require("../models/role");
 const Service = require("../models/service");
 const Energy = require("../models/energy");
-const Payment = require("../models/payment");
+const PaymentAccount = require("../models/paymentAccount");
 const Room = require("../models/room");
 const sequelize = require("../util/database");
 const bcrypt = require("bcrypt");
 require("dotenv").config();
 
 // ! ADMIN PAYMENT CONTROLLERS
-exports.getAllPayments = (req, res) => {
+exports.getAllPaymentAccounts = (req, res) => {
   sequelize
     .sync()
     .then(() => {
-      return Payment.findAll();
+      return PaymentAccount.findAll();
     })
-    .then((payments) => {
+    .then((paymentAccounts) => {
       return res.status(200).json({
         count: 1,
         message: `All payments found.`,
-        data: payments,
+        data: paymentAccounts,
       });
     })
     .catch((err) => {
@@ -29,19 +29,19 @@ exports.getAllPayments = (req, res) => {
     });
 };
 
-exports.createPayment = (req, res) => {
+exports.createPaymentAccount = (req, res) => {
   const { name, iban, currency, isDefault } = req.body;
 
-  let PAYMENT_MODEL;
+  let PAYMENT_ACCOUNT_MODEL;
 
   try {
-    PAYMENT_MODEL = {
+    PAYMENT_ACCOUNT_MODEL = {
       user: name,
       iban: iban,
       currency: currency,
       isDefault: isDefault,
     };
-    console.log(PAYMENT_MODEL);
+    console.log(PAYMENT_ACCOUNT_MODEL);
   } catch (error) {
     return res.status(400).end("All parameters are required!");
   }
@@ -49,13 +49,13 @@ exports.createPayment = (req, res) => {
   sequelize
     .sync()
     .then(() => {
-      return Payment.create(PAYMENT_MODEL);
+      return PaymentAccount.create(PAYMENT_ACCOUNT_MODEL);
     })
-    .then((payment) => {
+    .then((paymentAccount) => {
       return res.status(200).json({
         count: 1,
-        message: `Payment created.`,
-        data: payment,
+        message: `Payment account created.`,
+        data: paymentAccount,
       });
     })
     .catch((err) => {
@@ -64,16 +64,16 @@ exports.createPayment = (req, res) => {
     });
 };
 
-exports.deletePayment = (req, res) => {
+exports.deletePaymentAccount = (req, res) => {
   sequelize
     .sync()
     .then(() => {
-      return Payment.destroy({ where: { user: req.params.name } });
+      return PaymentAccount.destroy({ where: { user: req.params.name } });
     })
     .then((room) => {
       return res.status(200).json({
         count: 1,
-        message: `Payment removed.`,
+        message: `PaymentAccount removed.`,
         data: room,
       });
     })
@@ -82,31 +82,31 @@ exports.deletePayment = (req, res) => {
     });
 };
 
-exports.updatePayment = (req, res) => {
+exports.updatePaymentAccount = (req, res) => {
   const { name, iban, currency, isDefault } = req.body;
 
   sequelize
     .sync()
     .then(() => {
-      return Payment.findOne({
+      return PaymentAccount.findOne({
         where: {
           user: req.params.name,
         },
       });
     })
-    .then((_payment) => {
-      _payment.user = name ? name : _payment.user;
-      _payment.iban = iban ? iban : _payment.iban;
-      _payment.currency = currency ? currency : _payment.currency;
-      _payment.isDefault = isDefault === "on" ? true : false;
-      _payment.save();
-      return _payment;
+    .then((_paymentAccount) => {
+      _paymentAccount.user = name ? name : _paymentAccount.user;
+      _paymentAccount.iban = iban ? iban : _paymentAccount.iban;
+      _paymentAccount.currency = currency ? currency : _paymentAccount.currency;
+      _paymentAccount.isDefault = isDefault === "on" ? true : false;
+      _paymentAccount.save();
+      return _paymentAccount;
     })
-    .then((payment) => {
+    .then((paymentAccount) => {
       return res.status(200).json({
         count: 1,
-        message: `Payment updated.`,
-        data: payment,
+        message: `Payment account updated.`,
+        data: paymentAccount,
       });
     })
     .catch((err) => {
