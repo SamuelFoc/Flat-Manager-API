@@ -24,9 +24,11 @@ tags:
   - name: Responsibilities
   - name: Services
   - name: Statistics
+  - name: Payments
 
 paths:
-  # * ___ ADMIN ________________________________________
+  # ADMIN ________________________________________
+  # * posts
   /admin/register/:
     post:
       summary: Create new User
@@ -216,7 +218,7 @@ paths:
                 $ref: "#/components/schemas/ResPayment"
         500:
           description: Server side error
-
+  # * gets
   /admin/users:
     get:
       summary: Get all Users
@@ -521,7 +523,7 @@ paths:
                           format: date-time
         500:
           descripiton: Server side error
-
+  # * puts & deletes
   /admin/user/{username}:
     delete:
       summary: Delete one User
@@ -877,7 +879,7 @@ paths:
         500:
           descripiton: Server side error
 
-  # * ___ AUTHENTICATION ________________________________________
+  # AUTHENTICATION ________________________________________
   /login/:
     post:
       summary: Log in user
@@ -906,7 +908,6 @@ paths:
                 $ref: "#/components/schemas/Responsibility"
         500:
           descripiton: Server side error
-
   /logout/:
     get:
       get:
@@ -918,7 +919,6 @@ paths:
           description: Success
         500:
           descripiton: Server side error
-
   /refresh/:
     get:
       get:
@@ -931,7 +931,7 @@ paths:
         500:
           descripiton: Server side error
 
-  # * ___ USERS ________________________________________
+  # USERS ________________________________________
   /users/:
     get:
       summary: Get all users
@@ -947,7 +947,6 @@ paths:
                 $ref: "#/components/schemas/User"
         500:
           descripiton: Server side error
-
   /users/{email}:
     get:
       summary: Get one user
@@ -966,7 +965,7 @@ paths:
         500:
           descripiton: Server side error
 
-  # * ___ ROOMS ________________________________________
+  # ROOMS ________________________________________
   /rooms/:
     get:
       summary: Get all rooms
@@ -982,7 +981,6 @@ paths:
                 $ref: "#/components/schemas/Room"
         500:
           descripiton: Server side error
-
   /rooms/{name}:
     get:
       summary: Get one room
@@ -1001,7 +999,7 @@ paths:
         500:
           descripiton: Server side error
 
-  # * ___ PRODUCTS ________________________________________
+  # PRODUCTS ________________________________________
   /products/:
     post:
       summary: Create new product
@@ -1023,7 +1021,6 @@ paths:
                 $ref: "#/components/schemas/Product"
         500:
           descripiton: Server side error
-
     get:
       summary: Get all products
       tags:
@@ -1039,58 +1036,58 @@ paths:
         500:
           descripiton: Server side error
 
-  /products/{id}:
-    delete:
-      summary: Delete one product
-      tags:
-        - Products
-      description: Delete specific product with specified ID
-      parameters:
-        - name: id
-          in: path
-          required: true
-          descripiton: Id of the product
-          schema:
-            type: string
-      responses:
-        200:
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Product"
-        500:
-          descripiton: Server side error
-
-    put:
-      summary: Update one product
-      tags:
-        - Products
-      parameters:
-        - name: id
-          in: path
-          required: true
-          descripiton: Id of the product
-          schema:
-            type: string
-      requestBody:
-        description: Update specific product with specified ID
-        required: true
-        content:
-          application/json:
+    /products/{id}:
+      delete:
+        summary: Delete one product
+        tags:
+          - Products
+        description: Delete specific product with specified ID
+        parameters:
+          - name: id
+            in: path
+            required: true
+            descripiton: Id of the product
             schema:
-              $ref: "#/components/schemas/Product"
-      responses:
-        200:
-          description: Success
+              type: string
+        responses:
+          200:
+            description: Success
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/Product"
+          500:
+            descripiton: Server side error
+
+      put:
+        summary: Update one product
+        tags:
+          - Products
+        parameters:
+          - name: id
+            in: path
+            required: true
+            descripiton: Id of the product
+            schema:
+              type: string
+        requestBody:
+          description: Update specific product with specified ID
+          required: true
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Product"
-        500:
-          descripiton: Server side error
+        responses:
+          200:
+            description: Success
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/Product"
+          500:
+            descripiton: Server side error
 
-  # * ___ ENERGIES ________________________________________
+  # ENERGIES ________________________________________
   /energies/:
     post:
       summary: Create new consumption record
@@ -1112,7 +1109,6 @@ paths:
                 $ref: "#/components/schemas/Energy"
         500:
           descripiton: Server side error
-
     get:
       summary: Get all concumption records
       tags:
@@ -1128,31 +1124,31 @@ paths:
         500:
           descripiton: Server side error
 
-  /energies/{type}:
-    get:
-      summary: Get one record type
-      tags:
-        - Energies
-      description: Get just one type of energy records
-      parameters:
-        - name: type
-          in: path
-          required: true
-          descripiton: Type of records
-          schema:
-            type: string
-            enum: [Electricity, Water, Gas]
-      responses:
-        200:
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Energy"
-        500:
-          descripiton: Server side error
+    /energies/{type}:
+      get:
+        summary: Get one record type
+        tags:
+          - Energies
+        description: Get just one type of energy records
+        parameters:
+          - name: type
+            in: path
+            required: true
+            descripiton: Type of records
+            schema:
+              type: string
+              enum: [Electricity, Water, Gas]
+        responses:
+          200:
+            description: Success
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/Energy"
+          500:
+            descripiton: Server side error
 
-  # * ___ RESPONSIBILITIES ________________________________________
+  # RESPONSIBILITIES ________________________________________
   /responsibilities/:
     post:
       summary: Create new responsibility
@@ -1174,7 +1170,6 @@ paths:
                 $ref: "#/components/schemas/Responsibility"
         500:
           descripiton: Server side error
-
     get:
       summary: Get all responsibilities
       tags:
@@ -1189,7 +1184,6 @@ paths:
                 $ref: "#/components/schemas/Responsibility"
         500:
           descripiton: Server side error
-
   /responsibilities/{id}:
     delete:
       summary: Delete one responsibility
@@ -1211,7 +1205,6 @@ paths:
                 $ref: "#/components/schemas/Energy"
         500:
           descripiton: Server side error
-
     put:
       summary: Update responsibility
       tags:
@@ -1240,7 +1233,7 @@ paths:
         500:
           descripiton: Server side error
 
-  # * ___ SERVICES ________________________________________
+  # SERVICES ________________________________________
   /services/:
     get:
       summary: Get all Services
@@ -1257,7 +1250,7 @@ paths:
         500:
           descripiton: Server side error
 
-  # * ___ STATISTICS ________________________________________
+  # STATISTICS ________________________________________
   /statistics/averages/:
     get:
       summary: Get averages
@@ -1452,7 +1445,6 @@ paths:
                         type: string
                       price_currency:
                         type: string
-
         500:
           descripiton: Server side error
   /statistics/downloadReport/{type}:
@@ -1511,6 +1503,160 @@ paths:
         500:
           description: Server side error
 
+  # PAYMENTS ________________________________________
+  /payments/{email}:
+    get:
+      summary: Get all Payments
+      tags:
+        - Payments
+      description: Get all Payments of specified user
+      parameters:
+        - name: email
+          in: path
+          required: true
+          descripiton: Owner email
+          schema:
+            type: string
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InkasoPayment"
+        500:
+          descripiton: Server side error
+    post:
+      summary: Create new Payment
+      tags:
+        - Payments
+      parameters:
+        - name: email
+          in: path
+          required: true
+          descripiton: Owner email
+          schema:
+            type: string
+      requestBody:
+        description: Create new Payment with specified parameters
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InkasoPayment"
+            example:
+              title: "New Payment"
+              description: "Mobile phone tarif."
+              pay_day: 16
+              iban: CZ65 0800 0000 1920 0014
+              am: 599
+              ss: 123654
+              vs: 987456
+              cs: 6544
+              rn: "Vodafone"
+              msg: "Tarif payment"
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+              type: object
+            properties:
+              count:
+                type: number
+              message:
+                type: string
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    title:
+                      type: string
+                    description:
+                      type: string
+                    pay_day:
+                      type: number
+                    iban:
+                      type: string
+                    am:
+                      type: number
+                    ss:
+                      type: string
+                    vs:
+                      type: string
+                    cs:
+                      type: string
+                    rn:
+                      type: string
+                    msg:
+                      type: string
+                    last_paid:
+                      type: string
+        400:
+          descripiton: Title and iban are required fields
+        500:
+          descripiton: Server side error
+  /payments/{email}/{id}:
+    put:
+      summary: Update one Payment
+      tags:
+        - Payments
+      parameters:
+        - name: email
+          in: path
+          required: true
+          descripiton: Email of the User
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          descripiton: Id of the Payment
+          schema:
+            type: number
+      requestBody:
+        description: Update any property of specified Payment
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InkasoPayment"
+        500:
+          descripiton: Server side error
+    delete:
+      summary: Delete one Payment
+      tags:
+        - Payments
+      parameters:
+        - name: id
+          in: path
+          required: true
+          descripiton: Id of responsibility
+          schema:
+            type: number
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InkasoPayment"
+        500:
+          descripiton: Server side error
+
+# COMPONENTS
 components:
   parameters:
     email:
@@ -1520,7 +1666,6 @@ components:
       description: The email of the user
       schema:
         type: string
-
     name:
       name: name
       in: path
@@ -1606,6 +1751,7 @@ components:
               format: date-time
             pay_day:
               type: integer
+
     Product:
       type: object
       required:
@@ -1643,6 +1789,7 @@ components:
             priority:
               type: string
               enum: [LOW, HIGH, CRITICAL]
+
     Energy:
       type: object
       required:
@@ -1676,6 +1823,7 @@ components:
             date:
               type: string
               format: date-time
+
     Responsibility:
       type: object
       required:
@@ -1753,6 +1901,42 @@ components:
             isDefault:
               type: boolean
               enum: [on, off]
+
+    InkasoPayment:
+      type: object
+      properties:
+        count:
+          type: number
+        message:
+          type: string
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              title:
+                type: string
+              description:
+                type: string
+              pay_day:
+                type: number
+              iban:
+                type: string
+              am:
+                type: number
+              ss:
+                type: string
+              vs:
+                type: string
+              cs:
+                type: string
+              rn:
+                type: string
+              msg:
+                type: string
+              last_paid:
+                type: string
+
     Service:
       type: object
       required:
@@ -1782,6 +1966,7 @@ components:
             pay_day:
               type: number
               format: integer
+
     Unit:
       type: object
       required:
