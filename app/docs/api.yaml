@@ -192,7 +192,7 @@ paths:
                 $ref: "#/components/schemas/ResEnergy"
         500:
           description: Server side error
-  /admin/payment/:
+  /admin/paymentAccount/:
     post:
       summary: Create new Payment
       tags:
@@ -484,7 +484,7 @@ paths:
                               format: date-time
         500:
           descripiton: Server side error
-  /admin/payments:
+  /admin/paymentAccounts:
     get:
       summary: Get all Payments
       tags:
@@ -819,7 +819,7 @@ paths:
                 $ref: "#/components/schemas/ResEnergy"
         500:
           descripiton: Server side error
-  /admin/payment/{name}:
+  /admin/paymentAccount/{name}:
     delete:
       summary: Delete one Payment account
       tags:
