@@ -8,7 +8,6 @@ const Payment = sequelize.define(
     title: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
     },
     descripiton: {
       type: DataTypes.STRING,
@@ -33,13 +32,13 @@ const Payment = sequelize.define(
     vs: {
       type: DataTypes.STRING,
     },
-    cs: {
-      type: DataTypes.STRING,
-    },
     rn: {
       type: DataTypes.STRING,
     },
     msg: {
+      type: DataTypes.STRING,
+    },
+    cc: {
       type: DataTypes.STRING,
     },
     last_paid: {
@@ -54,5 +53,7 @@ const Payment = sequelize.define(
 
 Payment.belongsTo(User);
 User.hasMany(Payment);
+
+// Payment.sync({ force: true });
 
 module.exports = Payment;

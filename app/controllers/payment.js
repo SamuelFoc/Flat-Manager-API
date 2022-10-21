@@ -4,6 +4,7 @@ const sequelize = require("../util/database");
 
 exports.createPayment = (req, res) => {
   // Get all information about the payment
+  const { username } = req.params;
   const { title, description, pay_day, iban, am, ss, vs, cs, rn, msg } =
     req.body;
 
@@ -23,10 +24,13 @@ exports.createPayment = (req, res) => {
 
   // Create payment
   Payment.create(PAYMENT_MODEL)
-    .then((payment) => {
+    .then(async (payment) => {
+      const user = await User.findOne({ where: { username: username } });
+      await user.addPayment(payment);
+
       res.status(201).json({
         count: 1,
-        message: "New payment has been created.",
+        message: `New payment for user: ${username}, has been created.`,
         data: payment,
       });
     })
@@ -41,23 +45,28 @@ exports.createPayment = (req, res) => {
 
 exports.getAllPayments = (req, res) => {
   //Get user information
-  const { email } = req.params;
+  const { username } = req.params;
 
   //Find user and his payments
-  User.findOne({ where: { email: email } })
+  User.findOne({ where: { username: username } })
     .then((user) => {
+      if (!user) {
+        return res
+          .status(404)
+          .send("🤷 Cannot find user with specified username.");
+      }
       return user.getPayments();
     })
     .then((payments) => {
       res.status(200).json({
         count: payments.length,
-        message: `All payments of user ${email} found.`,
+        message: `All payments of user ${username} found.`,
         data: payments,
       });
     })
     .catch((err) => {
-      if (!email) {
-        return res.status(400).send("Email is reqired parameter in path.");
+      if (!username) {
+        return res.status(400).send("Username is reqired parameter in path.");
       }
       res.status(500).send("Server side error: " + err.message);
     });
@@ -68,8 +77,19 @@ exports.updatePayment = (req, res) => {
   const { id } = req.params;
 
   // Get values to update
-  const { title, description, pay_day, iban, am, ss, vs, cs, rn, msg } =
-    req.body;
+  const {
+    title,
+    description,
+    pay_day,
+    iban,
+    am,
+    ss,
+    vs,
+    cs,
+    rn,
+    msg,
+    last_paid,
+  } = req.body;
 
   // Get payment to update
   Payment.findOne({ where: { id: id } })
@@ -84,6 +104,7 @@ exports.updatePayment = (req, res) => {
       _payment.cs = cs ? cs : _payment.cs;
       _payment.rn = rn ? rn : _payment.rn;
       _payment.msg = msg ? msg : _payment.msg;
+      _payment.last_paid = last_paid ? last_paid : _payment.last_paid;
       _payment.save();
       return _payment;
     })

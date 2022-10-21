@@ -1504,17 +1504,17 @@ paths:
           description: Server side error
 
   # PAYMENTS ________________________________________
-  /payments/{email}:
+  /payments/{username}:
     get:
       summary: Get all Payments
       tags:
         - Payments
       description: Get all Payments of specified user
       parameters:
-        - name: email
+        - name: username
           in: path
           required: true
-          descripiton: Owner email
+          descripiton: Username of owner of payment
           schema:
             type: string
       responses:
@@ -1531,10 +1531,10 @@ paths:
       tags:
         - Payments
       parameters:
-        - name: email
+        - name: username
           in: path
           required: true
-          descripiton: Owner email
+          descripiton: Username of owner of payment
           schema:
             type: string
       requestBody:
@@ -1552,7 +1552,7 @@ paths:
               am: 599
               ss: 123654
               vs: 987456
-              cs: 6544
+              cc: 6544
               rn: "Vodafone"
               msg: "Tarif payment"
       responses:
@@ -1598,18 +1598,12 @@ paths:
           descripiton: Title and iban are required fields
         500:
           descripiton: Server side error
-  /payments/{email}/{id}:
+  /payments/{id}:
     put:
       summary: Update one Payment
       tags:
         - Payments
       parameters:
-        - name: email
-          in: path
-          required: true
-          descripiton: Email of the User
-          schema:
-            type: string
         - name: id
           in: path
           required: true
@@ -1643,7 +1637,7 @@ paths:
         - name: id
           in: path
           required: true
-          descripiton: Id of responsibility
+          descripiton: Id of Payment
           schema:
             type: number
       responses:
@@ -1928,7 +1922,7 @@ components:
                 type: string
               vs:
                 type: string
-              cs:
+              cc:
                 type: string
               rn:
                 type: string
