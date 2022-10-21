@@ -54,21 +54,19 @@ exports.getAllPayments = (req, res) => {
         return res
           .status(404)
           .send("🤷 Cannot find user with specified username.");
+      } else {
+        return user.getPayments();
       }
-      return user.getPayments();
     })
     .then((payments) => {
-      res.status(200).json({
+      return res.status(200).json({
         count: payments.length,
         message: `All payments of user ${username} found.`,
         data: payments,
       });
     })
     .catch((err) => {
-      if (!username) {
-        return res.status(400).send("Username is reqired parameter in path.");
-      }
-      res.status(500).send("Server side error: " + err.message);
+      return res.status(500).send("Server side error: " + err.message);
     });
 };
 
