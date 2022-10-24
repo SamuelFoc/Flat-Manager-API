@@ -74,7 +74,8 @@ app.use("/energies", require("./routes/energy"));
 app.use("/statistics", require("./routes/statistics"));
 app.use("/services", require("./routes/service"));
 app.use("/rooms", require("./routes/room"));
-app.use("/payments", require("./routes/paymentAccounts"));
+app.use("/paymentAccounts", require("./routes/paymentAccounts"));
+app.use("/payments", require("./routes/payment"));
 
 // ERROR
 app.use("*", (req, res) => res.status(403).json("Page not found!"));

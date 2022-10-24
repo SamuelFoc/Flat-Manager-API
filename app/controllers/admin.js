@@ -41,7 +41,6 @@ exports.createPaymentAccount = (req, res) => {
       currency: currency,
       isDefault: isDefault,
     };
-    console.log(PAYMENT_ACCOUNT_MODEL);
   } catch (error) {
     return res.status(400).end("All parameters are required!");
   }
@@ -116,7 +115,7 @@ exports.updatePaymentAccount = (req, res) => {
 
 // ! ADMIN USERS CONTROLLERS
 exports.registerUser = async (req, res) => {
-  const { user, pwd, email, contact, age, work, isAdmin } = req.body;
+  const { user, pwd, email, contact, age, work, isAdmin, room } = req.body;
   // * Check for required parameters
   if (!user || !pwd || !email)
     return res.status(400).end("Username, email and passsword required!");
@@ -151,7 +150,11 @@ exports.registerUser = async (req, res) => {
       }
       return user.addRole(role);
     })
-    .then((user) => {
+    .then(async (user) => {
+      if (room) {
+        const roomDB = await Room.findOne({ where: { name: room } });
+        roomDB.addUser(user);
+      }
       res.status(200).json({
         message: "User created succesfully",
         user: user,
@@ -298,7 +301,7 @@ exports.getAllRooms = (req, res) => {
 };
 
 exports.createRoom = async (req, res) => {
-  const { name } = req.body;
+  const { name, users } = req.body;
 
   let ROOM_MODEL;
 
@@ -321,11 +324,15 @@ exports.createRoom = async (req, res) => {
     .then(() => {
       return Room.create(ROOM_MODEL);
     })
-    .then((energy) => {
+    .then(async (room) => {
+      if (users) {
+        const user = await User.findOne({ where: { username: users } });
+        room.addUser(user);
+      }
       return res.status(200).json({
         count: 1,
         message: `Room created.`,
-        data: energy,
+        data: room,
       });
     })
     .catch((err) => {

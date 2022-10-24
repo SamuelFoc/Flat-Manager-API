@@ -1,8 +1,8 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../util/database");
 
-const Payment = sequelize.define(
-  "payment",
+const PaymentAccount = sequelize.define(
+  "payment_account",
   {
     user: {
       type: DataTypes.STRING,
@@ -26,4 +26,4 @@ const Payment = sequelize.define(
   }
 );
 
-module.exports = Payment;
+module.exports = PaymentAccount;
