@@ -1,6 +1,6 @@
 # FlatManager REST API
 
-Flat-Manager is web application used to help manage housing needs and duties. This API provides communication between FlatManager App and its database.
+Flat-Manager is a web application used to help manage housing needs and duties. This API provides communication between the Flat-Manager App and its database.
 
 # Content
 
@@ -14,7 +14,7 @@ Flat-Manager is web application used to help manage housing needs and duties. Th
 
 ## First use guide
 
-This guide should guide you through all processes needed to made this API works properly.
+This guide should guide you through all the processes needed to make this API work properly.
 
 1.  Extract downloaded file "Flat-Manager-API-main.zip"
 
@@ -50,7 +50,7 @@ This guide should guide you through all processes needed to made this API works 
 
         EMAIL_PWD="passwordToEmail"     # Password to previous mentioned E-mail address.
 
-5.  Now it's time to create a first user or Admin. Run folowing command
+5.  Now it's time to create the first user or admin. Run the following command
 
         npm run createAdmin
 
@@ -76,7 +76,7 @@ This guide should guide you through all processes needed to made this API works 
 
     ## Basic start up
 
-    If you already used the guidline above, everything should be setted up properly, so the next time you want to start up the API you don't have to go through all the stuff. In essence you have two options:
+    After following the guideline above, everything should be set up properly. This will ensure that the next time you want to start up the API you don't have to read through all the stuff. In essence, you have two options:
 
     - **Production start up**
 
@@ -86,13 +86,13 @@ This guide should guide you through all processes needed to made this API works 
 
             npm run dev
 
-    The main difference between these two types of running the API is, that if you are working on API (so you are running it in DEV mode) and something went wrong in code, you don't have to restart it manually after the bug correction, you just press **CTRL + S** and it will restart the API automaticly.
+    Among these two types of running the API, the main difference is that when you are working on it (in DEV mode), if something goes wrong in the code, you don't have to restart it manually after the bug correction, you just have to press **CTRL + S** and it will restart it for you.
 
     ## How to use environment file
 
     ### Access & Refresh token secrets
 
-    Access token and Refresh token secrets should be random strings that are used to create new tokens and still guarantee the security of mentioned tokens. If you want to generate really strong secret you can use the following commands to generate random strings using Node.
+    In order to create new tokens while still ensuring the security of previous tokens, the Access token and Refresh token secrets should be random strings. If you want to generate a really strong secret you can use the following commands to generate random strings using Node.
 
             > node
 
@@ -102,15 +102,15 @@ This guide should guide you through all processes needed to made this API works 
 
     ### External port
 
-    External port sets the port on which API will be running. If you want to use this API with FlatManager App, you have to set this port in **Flat-Manager-App > src > api > axios.js > BASE_URL**.
+    External port sets the port on which API will be running. If you want to use this API with FlatManager App, you have to set this port in **Flat-Manager-App > src > api > axios.js > BASE_URL** to be same.
 
     ### Test DB
 
-    This variable is used for testing API and its functionalities. If you want to perform any kind of tests on API you should set this variable to "true" to switch to "test-database", to prevent any kind of damage on already saved data on database used in practice.
+    This variable is used for testing the API and its functionalities. When performing any kind of API testing, you should set this variable to "true", so that you switch to the "test-database", to prevent damaging data already saved on the real database.
 
     ### Logging mode
 
-    Logging mode provides few different ways to log requests informations.
+    Logging mode provides a few different ways to log to the console for any request or information.
 
         "common" => ':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length]'
 
@@ -123,21 +123,21 @@ This guide should guide you through all processes needed to made this API works 
 
     ### Docs
 
-    Docs is used to provide documentation of the API. If its set to "true" you will see the following message in the console after running the API
+    Docs is used to provide documentation of the API. If it's set to "true" you will see the following message in the console after running the API.
 
         > INFO: Documentation running on: http://localhost:EXTERNAL_PORT/api-docs
 
-    If you press **CTRL** and clicks on the provided link, it will automaticly redirects you to online documentation page, where you can find all informations about every single endpoint of this API.
+    In case you press **CTRL** and click on the provided link, you will automatically be redirected to the online documentation page. Here, you can find all the details about the API's endpoints.
 
-    If it's set to "false" online documentation server is down.
+    If it's set to "false" the online documentation server is down.
 
     ### Send mails
 
-    This feature serves for sending email notifications to the all signed users after creating new product in product section. If it's set to "false" no email will be sent to the users.
+    After creating new products in the product section, this feature sends email notifications to all signed users. Users will not receive an email if it's set to "false".
 
     ### Verify JWT
 
-    When you want to test API for any use, it's not really practical to Log In and Log Out all the time. This feature is used to turn off JWT verification when set to "false". Keep in mind that this variable should be always set to "true" in production. If you set it to "false" you will also see the following message in the console
+    When you want to test API for any use, it's not really practical to Log In and Log Out all the time. This feature is used to turn off JWT verification when set to "false". Keep in mind that this variable should always be set to "true" in production. If you change it to "false" you will also see the following message in the console:
 
         > CAUTION: JWT verification is disabled!
 
@@ -147,15 +147,15 @@ This guide should guide you through all processes needed to made this API works 
 
     ### Alter models
 
-    After every change in database models in this API you should set this variable to "true" to apply the changes to DB models. Be carefull when setting this variable to "true" because this can leads to data loss.
+    After every change in database models in this API, you should set this variable to "true" to apply the changes to DB models. Setting this variable to "true" can result in data loss.
 
     ### Force models
 
-    This feature should be set to "true" only in case of big changes to the DB models. If it's set to "true" it will automaticaly delete all DB data. It's necessary to have any kind of backup for DB before running API with this setting.
+    This feature should be set to "true" only in case of big changes to the DB models. **If it's set to "true" it will automatically delete all DB data!** It's necessary to have any kind of backup for DB before running API with this setting.
 
     ### Email address
 
-    This email address will be used as an address, from which all the mails will be sent to the users.
+    Users will receive all mails from this email address.
 
     ### Email password
 
@@ -163,15 +163,15 @@ This guide should guide you through all processes needed to made this API works 
 
     If you want to use a **GMAIL** account, you should allow 2-Step verification in it (use this link: https://support.google.com/accounts/answer/185839?hl=en&co=GENIE.Platform%3DDesktop).
 
-    Using google tutorial from previous link you should generate a password for third party aplications and then you can use it as a password in this app.
+    With the google tutorial in the previous link, you can generate a password for third-party applications and then use it as a password for this app.
 
     ## CORS policy
 
-    If you want to use this API you have to set up the CORS policy. As first you shoul go to main folder "Flat-Manager-API-main" and then to file: **./app/config/allowedOrigins.js**. In this file you will find preset origins, as can be seen below.
+    If you want to use this API you have to set up the CORS policy. First, you should go to the main folder "Flat-Manager-API-main" and then to the file: **./app/config/allowedOrigins.js**. In this file, you will find preset origins, as can be seen below.
 
     ![CORS origins](./screens/CORS_origins.png "CORS origins")
 
-    If you want to run your FrontEnd or another API on different host and port you should add it into the **allowedOrigins**.
+    If you want to run your FrontEnd or another API on a different host and port you should add it to the **allowedOrigins**.
 
     Also if you want to add some endpoints into this API you should go to the file: **./app/config/corsOptions.js** and set up all allowed methods.
 
