@@ -1,5 +1,5 @@
 const PaymentAccount = require("../models/paymentAccount");
-
+const { Op } = require("sequelize");
 const sequelize = require("../util/database");
 
 // ! ADMIN PAYMENT CONTROLLERS
@@ -7,7 +7,9 @@ exports.getAllPaymentAccounts = (req, res) => {
   sequelize
     .sync()
     .then(() => {
-      return PaymentAccount.findAll({ where: { isDefault: true } });
+      return PaymentAccount.findAll({
+        where: { [Op.or]: [{ isDefault: "on" }, { isDefault: true }] },
+      });
     })
     .then((paymentAccounts) => {
       return res.status(200).json({
