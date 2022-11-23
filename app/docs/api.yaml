@@ -1943,6 +1943,8 @@ components:
         pay_day:
           type: number
           format: integer
+        paid_by:
+          type: string
     ResService:
       type: object
       properties:
