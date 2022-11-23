@@ -46,6 +46,10 @@ exports.getOne = async (req, res) => {
 
   // How many services are paid by me and how much I paid in total
   const my_services = await me.getServices();
+  const my_services_full = my_services.map((service) => ({
+    name: service.name,
+    price: service.monthly_price,
+  }));
   const paid_by_me = my_services
     .map((service) => service.monthly_price)
     .reduce((sum, value) => sum + value, 0);
@@ -67,6 +71,7 @@ exports.getOne = async (req, res) => {
     living_names: residents,
     units: services_on_room,
     units_total: should_pay_on_services.toFixed(2),
+    my_units: my_services_full,
     units_paid_by_me: paid_by_me.toFixed(2),
     arrears: arrears.toFixed(2),
     rent: rent_on_room.toFixed(2),

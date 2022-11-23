@@ -239,6 +239,7 @@ exports.getAllUsers = (req, res) => {
 
 exports.updateUser = async (req, res) => {
   const { user, email, pwd, contact, age, work, isAdmin } = req.body;
+
   let count;
   sequelize
     .sync()
@@ -250,14 +251,14 @@ exports.updateUser = async (req, res) => {
         },
       });
     })
-    .then((_user) => {
-      _user.username = user ? input.user : _user.username;
-      _user.email = email ? input.email : _user.email;
-      _user.password = pwd ? input.password : _user.password;
-      _user.contact = contact ? input.contact : _user.contact;
-      _user.age = age ? input.age : _user.age;
-      _user.work = work ? input.work : _user.work;
-      _user.isAdmin = isAdmin ? input.isAdmin : _user.isAdmin;
+    .then(async (_user) => {
+      _user.username = user ? user : _user.username;
+      _user.email = email ? email : _user.email;
+      _user.password = pwd ? await bcrypt.hash(pwd, 10) : _user.password;
+      _user.contact = contact ? contact : _user.contact;
+      _user.age = age ? age : _user.age;
+      _user.work = work ? work : _user.work;
+      _user.isAdmin = isAdmin ? isAdmin : _user.isAdmin;
       _user.save();
       return _user;
     })
